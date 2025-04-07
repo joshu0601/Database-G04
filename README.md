@@ -74,7 +74,6 @@
 | year         | INTEGER  | NOT NULL                                            | 年份             |
 | month        | INTEGER  | NOT NULL, CHECK (month BETWEEN 1 AND 12)            | 月份             |
 | budget_limit | NUMERIC  | NOT NULL, CHECK (budget_limit >= 0)                 | 分類預算金額     |
-| UNIQUE       | —        | UNIQUE(user_id, category_id, year, month)           | 每月分類唯一     |
 
 ---
 
