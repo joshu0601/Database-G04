@@ -30,13 +30,14 @@
 ## 資料表
 ### 📋 users 使用者資料表
 
-| 欄位名稱   | 資料型別  | 限制條件                      | 說明       |
-|------------|-----------|-------------------------------|------------|
-| user_id    | SERIAL    | PRIMARY KEY                   | 使用者 ID  |
-| name       | TEXT      | NOT NULL                      | 姓名       |
-| email      | TEXT      | UNIQUE, NOT NULL              | 信箱       |
-| income     | NUMERIC   | CHECK (income >= 0)           | 月收入     |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
+| 欄位名稱      | 資料型別  | 限制條件                      | 說明       |
+|--------------|-----------|-------------------------------|------------|
+| user_id      | SERIAL    | PRIMARY KEY                   | 使用者 ID  |
+| user_account | VARCHAR(255) | UNIQUE,NOT NULL            | 使用者帳號 |
+| user_password| VARCHAR(24)| NOT NULL                      | 使用者密碼 |
+| name         | VARCHAR(50)  | NOT NULL                      | 姓名       |
+| income       | NUMERIC   | CHECK (income >= 0)           | 月收入     |
+| created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
 
 ---
 
@@ -46,7 +47,7 @@
 |------------|----------|-----------------------------------------|--------------|
 | category_id| SERIAL   | PRIMARY KEY                             | 分類 ID      |
 | user_id    | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID    |
-| name       | TEXT     | NOT NULL, UNIQUE(user_id, name)         | 分類名稱     |
+| name       | VARCHAR(50) | NOT NULL, UNIQUE(user_id, name)      | 分類名稱     |
 
 ---
 
@@ -58,7 +59,7 @@
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID      |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID        |
 | amount       | NUMERIC  | NOT NULL, CHECK (amount > 0)              | 支出金額       |
-| description  | TEXT     |                                           | 支出說明       |
+| description  | VARCHAR(255)|                                        | 支出說明       |
 | expense_date | DATE     | NOT NULL                                  | 花費日期       |
 | created_at   | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP                 | 建立時間       |
 
@@ -74,7 +75,6 @@
 | year         | INTEGER  | NOT NULL                                            | 年份             |
 | month        | INTEGER  | NOT NULL, CHECK (month BETWEEN 1 AND 12)            | 月份             |
 | budget_limit | NUMERIC  | NOT NULL, CHECK (budget_limit >= 0)                 | 分類預算金額     |
-| UNIQUE       | —        | UNIQUE(user_id, category_id, year, month)           | 每月分類唯一     |
 
 ---
 
@@ -84,12 +84,14 @@
 |----------------|----------|-----------------------------------------|------------------|
 | goal_id        | SERIAL   | PRIMARY KEY                             | 目標 ID          |
 | user_id        | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID        |
-| name           | TEXT     | NOT NULL                                | 儲蓄目標名稱     |
+| name           | VARCHAR(50) | NOT NULL                             | 儲蓄目標名稱     |
 | target_amount  | NUMERIC  | NOT NULL, CHECK (target_amount > 0)     | 目標金額         |
 | current_amount | NUMERIC  | DEFAULT 0, CHECK (current_amount >= 0)  | 目前已儲蓄金額   |
 | start_date     | DATE     | NOT NULL                                | 儲蓄開始日期     |
-| end_date       | DATE     |                                         | 儲蓄結束日期     |
+| end_date       | DATE     | NOT NULL                                | 儲蓄結束日期     |
 | created_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP               | 建立時間         |
+
+---
 
 ## 🏆 團隊成員
 
