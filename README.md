@@ -90,6 +90,12 @@
 | end_date       | DATE     |                                         | 儲蓄結束日期     |
 | created_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP               | 建立時間         |
 
+
+## ER Diagram
+
+![ER 圖](images/0407ER圖.png)
+
+
 ## 🏆 團隊成員
 
 
