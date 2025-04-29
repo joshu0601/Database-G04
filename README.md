@@ -56,7 +56,7 @@ CREATE TABLE users (
 
 | 欄位名稱   | 資料型別 | 限制條件                                | 說明         |
 |------------|----------|-----------------------------------------|--------------|
-| category_id| SERIAL   | PRIMARY KEY                             | 分類 ID      |
+| category_id| AUTO_INCREMENT| PRIMARY KEY                             | 分類 ID      |
 | user_id    | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID    |
 | name       | VARCHAR(50) | NOT NULL, UNIQUE(user_id, name)      | 分類名稱     |
 
@@ -76,7 +76,7 @@ CREATE TABLE categories (
 
 | 欄位名稱     | 資料型別 | 限制條件                                  | 說明           |
 |--------------|----------|-------------------------------------------|----------------|
-| expense_id   | SERIAL   | PRIMARY KEY                               | 支出 ID        |
+| expense_id   | AUTO_INCREMENT   | PRIMARY KEY                               | 支出 ID        |
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID      |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID        |
 | amount       | INTEGER  | NOT NULL, CHECK (amount > 0)              | 支出金額       |
@@ -104,7 +104,7 @@ CREATE TABLE expenses (
 
 | 欄位名稱     | 資料型別 | 限制條件                                            | 說明             |
 |--------------|----------|-----------------------------------------------------|------------------|
-| budget_id    | SERIAL   | PRIMARY KEY                                         | 預算 ID          |
+| budget_id    | AUTO_INCREMENT   | PRIMARY KEY                                         | 預算 ID          |
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)                        | 使用者 ID        |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)               | 分類 ID          |
 | year         | INTEGER  | NOT NULL                                            | 年份             |
@@ -130,7 +130,7 @@ CREATE TABLE budgets (
 
 | 欄位名稱       | 資料型別 | 限制條件                                | 說明             |
 |----------------|----------|-----------------------------------------|------------------|
-| goal_id        | SERIAL   | PRIMARY KEY                             | 目標 ID          |
+| goal_id        | AUTO_INCREMENT   | PRIMARY KEY                             | 目標 ID          |
 | user_id        | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID        |
 | name           | VARCHAR(50) | NOT NULL                             | 儲蓄目標名稱     |
 | target_amount  | INTEGER  | NOT NULL, CHECK (target_amount > 0)     | 目標金額         |
