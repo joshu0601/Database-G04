@@ -40,14 +40,7 @@
 | created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
 
 ### 📋 users 使用者資料表SQL
-CREATE TABLE users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_account VARCHAR(255) NOT NULL UNIQUE,
-    user_password VARCHAR(24) NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    income INT CHECK (income >= 0),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE users (user_id INT AUTO_INCREMENT PRIMARY KEY,user_account VARCHAR(255) NOT NULL UNIQUE,user_password VARCHAR(24) NOT NULL,name VARCHAR(50) NOT NULL,income INT CHECK (income >= 0),created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 
 ---
 
