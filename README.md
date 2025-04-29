@@ -61,6 +61,7 @@ CREATE TABLE users (
 | name       | VARCHAR(50) | NOT NULL, UNIQUE(user_id, name)      | 分類名稱     |
 
 ### 📋 categories 支出分類表SQL
+```sql
 CREATE TABLE categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -68,7 +69,7 @@ CREATE TABLE categories (
     UNIQUE (user_id, name),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
-
+```
 ---
 
 ### 📋 expenses 支出紀錄表
@@ -84,6 +85,7 @@ CREATE TABLE categories (
 | created_at   | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP                 | 建立時間       |
 
 ### 📋 expenses 支出紀錄表SQL
+```sql
 CREATE TABLE expenses (
     expense_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -95,7 +97,7 @@ CREATE TABLE expenses (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
-
+```
 ---
 
 ### 📋 budgets 每月預算表
@@ -110,6 +112,7 @@ CREATE TABLE expenses (
 | budget_limit | INTEGER  | NOT NULL, CHECK (budget_limit >= 0)                 | 分類預算金額     |
 
 ### 📋 budgets 每月預算表SQL
+```sql
 CREATE TABLE budgets (
     budget_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -120,7 +123,7 @@ CREATE TABLE budgets (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
-
+```
 ---
 
 ### 📋 saving_goals 儲蓄目標表
@@ -137,6 +140,7 @@ CREATE TABLE budgets (
 | created_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP               | 建立時間         |
 
 ### 📋 saving_goals 儲蓄目標表SQL
+```sql
 CREATE TABLE saving_goals (
     goal_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -148,7 +152,7 @@ CREATE TABLE saving_goals (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
-
+```
 ---
 
 ## ER Diagram
