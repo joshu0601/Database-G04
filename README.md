@@ -39,6 +39,16 @@
 | income       | INTEGER   | CHECK (income >= 0)           | 月收入     |
 | created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
 
+### 📋 users 使用者資料表SQL
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_account VARCHAR(255) NOT NULL UNIQUE,
+    user_password VARCHAR(24) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    income INT CHECK (income >= 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 ---
 
 ### 📋 categories 支出分類表
@@ -48,6 +58,15 @@
 | category_id| SERIAL   | PRIMARY KEY                             | 分類 ID      |
 | user_id    | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID    |
 | name       | VARCHAR(50) | NOT NULL, UNIQUE(user_id, name)      | 分類名稱     |
+
+### 📋 categories 支出分類表SQL
+CREATE TABLE categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    name VARCHAR(50) NOT NULL,
+    UNIQUE (user_id, name),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
 
 ---
 
@@ -63,6 +82,19 @@
 | expense_date | DATE     | NOT NULL                                  | 花費日期       |
 | created_at   | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP                 | 建立時間       |
 
+### 📋 expenses 支出紀錄表SQL
+CREATE TABLE expenses (
+    expense_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    category_id INT,
+    amount INT NOT NULL CHECK (amount > 0),
+    description VARCHAR(255),
+    expense_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
+
 ---
 
 ### 📋 budgets 每月預算表
@@ -75,6 +107,18 @@
 | year         | INTEGER  | NOT NULL                                            | 年份             |
 | month        | INTEGER  | NOT NULL, CHECK (month BETWEEN 1 AND 12)            | 月份             |
 | budget_limit | INTEGER  | NOT NULL, CHECK (budget_limit >= 0)                 | 分類預算金額     |
+
+### 📋 budgets 每月預算表SQL
+CREATE TABLE budgets (
+    budget_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    category_id INT,
+    year INT NOT NULL,
+    month INT NOT NULL CHECK (month BETWEEN 1 AND 12),
+    budget_limit INT NOT NULL CHECK (budget_limit >= 0),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
 
 ---
 
@@ -90,6 +134,19 @@
 | start_date     | DATE     | NOT NULL                                | 儲蓄開始日期     |
 | end_date       | DATE     | NOT NULL                                | 儲蓄結束日期     |
 | created_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP               | 建立時間         |
+
+### 📋 saving_goals 儲蓄目標表SQL
+CREATE TABLE saving_goals (
+    goal_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    name VARCHAR(50) NOT NULL,
+    target_amount INT NOT NULL CHECK (target_amount > 0),
+    current_amount INT DEFAULT 0 CHECK (current_amount >= 0),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
 
 ---
 
