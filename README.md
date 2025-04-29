@@ -49,7 +49,7 @@ CREATE TABLE users (
     income INT CHECK (income >= 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+'''
 ---
 
 ### 📋 categories 支出分類表
