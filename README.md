@@ -32,7 +32,7 @@
 
 | 欄位名稱      | 資料型別  | 限制條件                      | 說明       |
 |--------------|-----------|-------------------------------|------------|
-| user_id      | SERIAL    | PRIMARY KEY                   | 使用者 ID  |
+| user_id      | AUTO_INCREMENT| PRIMARY KEY                   | 使用者 ID  |
 | user_account | VARCHAR(255) | UNIQUE,NOT NULL            | 使用者帳號 |
 | user_password| VARCHAR(24)| NOT NULL                      | 使用者密碼 |
 | name         | VARCHAR(50)  | NOT NULL                      | 姓名       |
