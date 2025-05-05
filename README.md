@@ -157,7 +157,7 @@ CREATE TABLE saving_goals (
 
 ## ER Diagram(改)
 
-<!--![ER 圖](image/0407ER圖.png) -->
+[ER 圖](image/ER圖.png)
 
 
 ## 🏆 團隊成員
