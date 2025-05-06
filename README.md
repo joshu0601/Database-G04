@@ -51,7 +51,14 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
+### 📋 users 使用者資料表SQL範例
 ---
+```sql
+INSERT INTO users (user_account, user_password, name, income)
+VALUES
+('alice01', 'securepass123', '王小美', 48000),
+('bob88', 'mypassword456', '陳志明', 60000);
+```
 
 ### 📋 categories 支出分類表
 
