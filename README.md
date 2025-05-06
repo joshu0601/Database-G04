@@ -216,8 +216,6 @@ VALUES
 | budget_id   | category_id|  categories  |     每個每月預算表會屬於一個已經建立的類別     |
 | saving_goals| category_id|  categories  |      每個儲蓄目標表會關聯到一位已經註冊的使用者|
 
-
----
 ## ER Diagram(改)
 
 ![ER 圖](image/ER圖.png)
