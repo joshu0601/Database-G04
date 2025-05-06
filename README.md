@@ -206,7 +206,7 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 ---
 ### 完整性限制
 
-| 資料表      |     主鍵    |                        說明                               |
+| 資料表(Table)      |     主鍵(Primary Key)    |                        說明                               |
 |-------------|------------|-----------------------------------------------------------|
 | users       | user_id    |                  每個使用者都有唯一的號碼來辨識身分          |
 | categories  | category_id|        每個建立的類別都有唯一的編號                          |
@@ -214,7 +214,7 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 | budgets     | budget_id  |     每一筆月預算表都有唯一的編號                             |
 | saving_goals| goal_id    |   每一個儲蓄目標都有唯一的編號                               |
 
-|    資料表    |     外鍵     |  參照主資料表  |                    說明                     |
+|    子資料表(Child Table)    |     外鍵(Foreign Key)     |  參照主資料表(Parent Table)  |                    說明                     |
 |--------------|------------------|----------------|---------------------------------------------|
 | categories   | user_id          | users          | 每一個類別都是關聯到一位已經註冊的使用者     |
 | expenses     | user_id          | users          | 每一筆支出紀錄都是關聯到一位已經註冊的使用者 |
