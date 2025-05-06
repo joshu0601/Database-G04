@@ -52,14 +52,13 @@ CREATE TABLE users (
 );
 ```
 ### 📋 users 使用者資料表SQL範例
----
 ```sql
 INSERT INTO users (user_account, user_password, name, income)
 VALUES
 ('alice01', 'securepass123', '王小美', 48000),
 ('bob88', 'mypassword456', '陳志明', 60000);
 ```
-
+---
 ### 📋 categories 支出分類表
 
 | 欄位名稱   | 資料型別 | 限制條件                                | 說明         |
@@ -77,6 +76,16 @@ CREATE TABLE categories (
     UNIQUE (user_id, name),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+```
+### 📋 categories 支出分類表SQL範例
+```sql
+INSERT INTO categories (user_id, name)
+VALUES
+(1, '飲食'),
+(1, '交通'),
+(1, '娛樂'),
+(2, '飲食'),
+(2, '購物');
 ```
 ---
 
@@ -106,6 +115,16 @@ CREATE TABLE expenses (
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 ```
+### 📋 expenses 支出紀錄表SQL範例
+```sql
+INSERT INTO expenses (user_id, category_id, amount, description, expense_date)
+VALUES
+(1, 1, 150, '午餐便當', '2025-05-01'),
+(1, 2, 50, '捷運車資', '2025-05-02'),
+(1, 3, 600, '看電影+飲料', '2025-05-03'),
+(2, 4, 200, '早餐+咖啡', '2025-05-01'),
+(2, 5, 1200, '網購衣服', '2025-05-02');
+```
 ---
 
 ### 📋 budgets 每月預算表
@@ -131,6 +150,15 @@ CREATE TABLE budgets (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
+```
+### 📋 budgets 每月預算表SQL範例
+```sql
+INSERT INTO budgets (user_id, category_id, year, month, budget_limit)
+VALUES
+(1, 1, 2025, 5, 6000),  -- 王小美 飲食
+(1, 2, 2025, 5, 1500),  -- 王小美 交通
+(2, 4, 2025, 5, 5000),  -- 陳志明 飲食
+(2, 5, 2025, 5, 10000); -- 陳志明 購物
 ```
 ---
 
@@ -160,6 +188,13 @@ CREATE TABLE saving_goals (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+```
+### 📋 saving_goals 儲蓄目標表SQL範例
+```sql
+INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date)
+VALUES
+(1, '日本旅行', 30000, '2025-05-01', '2025-08-01'),
+(2, '買筆電', 50000, '2025-04-15', '2025-09-30');
 ```
 ---
 
