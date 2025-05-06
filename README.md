@@ -122,7 +122,7 @@ CREATE TABLE transactions (
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 ```
-### 📋 expenses 支出紀錄表SQL範例
+### 📋 expenses 交易紀錄表SQL範例
 ```sql
 INSERT INTO transactions (user_id, type, amount, category_id, transaction_date, description)
 VALUES
