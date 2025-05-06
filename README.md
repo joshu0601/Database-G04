@@ -98,13 +98,13 @@ INSERT INTO categories (user_id, name) VALUES
 
 | 欄位名稱     | 資料型別 | 限制條件                                  | 說明           |
 |--------------|----------|-------------------------------------------|----------------|
-| transaction_id   | AUTO_INCREMENT   | PRIMARY KEY                               | 交易 ID        |
-| user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID      |
-| category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID        |
-| type      | ENUM('Income', 'Expense')  | NOT NULL              | 收入支出分類       |
-|amount      |INT|               NOT NULL CHECK (amount >= 0)              | 金額       |
-| transaction_date | DATE     | NOT NULL                                  | 交易日期       |
-| description   | VARCHAR(255)|                 | 此項交易說明  |
+| transaction_id   | AUTO_INCREMENT   | PRIMARY KEY                   | 交易 ID|
+| user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID |
+| category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID     |
+| type         | ENUM('Income', 'Expense')|  NOT NULL                  | 收入支出分類    |
+|amount        |INT|               NOT NULL CHECK (amount >= 0)        | 金額       |
+| transaction_date | DATE     | NOT NULL                             | 交易日期       |
+| description   | VARCHAR(255)|                                      | 此項交易說明  |
 | created_at   | TIMESTAMP|        DEFAULT CURRENT_TIMESTAMP         | 創建時間  |
 
 ### 📋 transactions 交易紀錄表SQL
@@ -185,7 +185,7 @@ INSERT INTO budgets (user_id, category_id, year, month, budget_limit) VALUES
 | start_date     | DATE     | NOT NULL                                | 儲蓄開始日期     |
 | end_date       | DATE     | NOT NULL                                | 儲蓄結束日期     |
 | created_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP               | 建立時間         |
-| status     | VARCHAR(20)| DEFAULT 'Active' CHECK (status IN ('Active', 'Completed')) | 建立時間|
+| status     | VARCHAR(20)| DEFAULT 'Active' CHECK (status IN ('Active', 'Completed')) | 目標完成狀態|
 
 ### 📋 saving_goals 儲蓄目標表SQL
 ```sql
@@ -233,7 +233,7 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 
 ## ER Diagram(改)
 
-![ER 圖](image/ER圖.png)
+![ER 圖](image/新ER圖.png)
 
 
 ## 🏆 團隊成員
