@@ -58,8 +58,14 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
+### 📋 users 使用者資料表SQL範例
+```sql
+INSERT INTO users (user_account, user_password, name, income) VALUES
+('xiaosong', 'pass1234', '小宋', 50000),
+('laogao', 'safe5678', '老高', 75000),
+('xiaoguo', 'mypwd999', '小郭', 62000);
+```
 ---
-
 ### 📋 categories 支出分類表
 
 | 欄位名稱   | 資料型別 | 限制條件                                | 說明         |
@@ -77,6 +83,16 @@ CREATE TABLE categories (
     UNIQUE (user_id, name),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+```
+### 📋 categories 支出分類表SQL範例
+```sql
+INSERT INTO categories (user_id, name) VALUES
+(1, '飲食'),
+(1, '交通'),
+(2, '旅遊'),
+(2, '投資'),
+(3, '娛樂'),
+(3, '醫療');
 ```
 ---
 
@@ -106,6 +122,16 @@ CREATE TABLE expenses (
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 ```
+### 📋 expenses 支出紀錄表SQL範例
+```sql
+INSERT INTO expenses (user_id, category_id, amount, description, expense_date) VALUES
+(1, 1, 120, '早餐蛋餅', '2025-05-05'),
+(1, 2, 35, '公車票', '2025-05-06'),
+(2, 3, 15000, '台東三日遊', '2025-05-03'),
+(2, 4, 5000, 'ETF 定期定額', '2025-05-01'),
+(3, 5, 899, 'KTV 包廂費', '2025-05-04'),
+(3, 6, 300, '牙醫洗牙', '2025-05-02');
+```
 ---
 
 ### 📋 budgets 每月預算表
@@ -131,6 +157,16 @@ CREATE TABLE budgets (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
+```
+### 📋 budgets 每月預算表SQL範例
+```sql
+INSERT INTO budgets (user_id, category_id, year, month, budget_limit) VALUES
+(1, 1, 2025, 5, 4000),  -- 小宋 飲食
+(1, 2, 2025, 5, 1000),  -- 小宋 交通
+(2, 3, 2025, 5, 20000), -- 老高 旅遊
+(2, 4, 2025, 5, 10000), -- 老高 投資
+(3, 5, 2025, 5, 3000),  -- 小郭 娛樂
+(3, 6, 2025, 5, 1500);  -- 小郭 醫療
 ```
 ---
 
@@ -161,7 +197,32 @@ CREATE TABLE saving_goals (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 ```
+### 📋 saving_goals 儲蓄目標表SQL範例
+```sql
+INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VALUES
+(1, '買手機', 25000, '2025-05-01', '2025-08-01'),
+(2, '環島旅行', 40000, '2025-05-01', '2025-10-01'),
+(3, '急用醫療基金', 20000, '2025-04-01', '2025-12-31');
+```
 ---
+### 完整性限制
+
+| 資料表      |     主鍵    |                        說明                               |
+|-------------|------------|-----------------------------------------------------------|
+| users       | user_id    |                  每個使用者都有唯一的號碼來辨識身分          |
+| categories  | category_id|        每個建立的類別都有唯一的編號                          |
+| expenses    | expense_id |           每一筆支出紀錄都有唯一的編號                       |
+| budgets     | budget_id  |     每一筆月預算表都有唯一的編號                             |
+| saving_goals| goal_id    |   每一個儲蓄目標都有唯一的編號                               |
+
+|    資料表   |     外鍵    |  參照主資料表 |                    說明                     |
+|-------------|------------|------------------------------------------------------------|
+| categories  | user_id    |  users       |      每一個類別都是關聯到一位已經註冊使用者    |
+| expenses    | user_id    |  users       |   每一筆支出紀錄都是關聯到一位已經註冊的使用者  |
+| expenses    | category_id|  categories  |    每一筆支出紀錄表會關聯到一個已經建立的類別  |
+| budgets     | user_id    |  users       |    每個每月預算表會關聯一位已經註冊的使用者    |
+| budget_id   | category_id|  categories  |     每個每月預算表會屬於一個已經建立的類別     |
+| saving_goals| category_id|  categories  |      每個儲蓄目標表會關聯到一位已經註冊的使用者|
 
 ## ER Diagram(改)
 
