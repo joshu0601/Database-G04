@@ -94,27 +94,29 @@ INSERT INTO categories (user_id, name) VALUES
 ```
 ---
 
-### 📋 expenses 支出紀錄表
+### 📋 transactions 交易紀錄表
 
 | 欄位名稱     | 資料型別 | 限制條件                                  | 說明           |
 |--------------|----------|-------------------------------------------|----------------|
-| expense_id   | AUTO_INCREMENT   | PRIMARY KEY                               | 支出 ID        |
+| transaction_id   | AUTO_INCREMENT   | PRIMARY KEY                               | 交易 ID        |
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID      |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID        |
-| amount       | INTEGER  | NOT NULL, CHECK (amount > 0)              | 支出金額       |
-| description  | VARCHAR(255)|                                        | 支出說明       |
-| expense_date | DATE     | NOT NULL                                  | 花費日期       |
-| created_at   | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP                 | 建立時間       |
+| type      | ENUM('Income', 'Expense')  | NOT NULL              | 收入支出分類       |
+|amount      |INT|               NOT NULL CHECK (amount >= 0)              | 金額       |
+| transaction_date | DATE     | NOT NULL                                  | 交易日期       |
+| description   | VARCHAR(255)|                 | 此項交易說明  |
+| created_at   | TIMESTAMP|        DEFAULT CURRENT_TIMESTAMP         | 創建時間  |
 
-### 📋 expenses 支出紀錄表SQL
+### 📋 transactions 交易紀錄表SQL
 ```sql
-CREATE TABLE expenses (
-    expense_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
+    type ENUM('Income', 'Expense') NOT NULL,
+    amount INT NOT NULL CHECK (amount >= 0),
     category_id INT,
-    amount INT NOT NULL CHECK (amount > 0),
+    transaction_date DATE NOT NULL,
     description VARCHAR(255),
-    expense_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
