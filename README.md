@@ -42,8 +42,8 @@
 | user_id      | AUTO_INCREMENT| PRIMARY KEY                   | 使用者 ID  |
 | user_account | VARCHAR(255) | UNIQUE,NOT NULL            | 使用者帳號 |
 | user_password| VARCHAR(24)| NOT NULL                      | 使用者密碼 |
-| name         | VARCHAR(50)  | NOT NULL                      | 姓名       |
-| income       | INTEGER   | CHECK (income >= 0)           | 月收入     |
+| name         | VARCHAR(50)  | NOT NULL                      | 姓名    |
+| total_assets | INTEGER   |DEFAULT 0 CHECK (total_assets >= 0)| 總資產|
 | created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
 
 ### 📋 users 使用者資料表SQL
@@ -53,20 +53,20 @@ CREATE TABLE users (
     user_account VARCHAR(255) NOT NULL UNIQUE,
     user_password VARCHAR(24) NOT NULL,
     name VARCHAR(50) NOT NULL,
-    income INT CHECK (income >= 0),
+    total_assets INT DEFAULT 0 CHECK (total_assets >= 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 ### 📋 users 使用者資料表SQL範例
 ```sql
-INSERT INTO users (user_account, user_password, name, income) VALUES
-('xiaosong', 'abc123', '小宋', 35000),
-('laogao', 'def456', '老高', 8000),
+INSERT INTO users (user_account, user_password, name, total_assets) VALUES
+('xiaosong', 'abc123', '小宋', 350000),
+('laogao', 'def456', '老高', 80000),
 ('xiaoguo', 'ghi789', '小郭', 28000),
 ('zhangsan', 'jkl000', '張三', 60000);
 ```
 ---
-### 📋 categories 支出分類表
+### 📋 categories 交易分類表
 
 | 欄位名稱   | 資料型別 | 限制條件                                | 說明         |
 |------------|----------|-----------------------------------------|--------------|
@@ -74,7 +74,7 @@ INSERT INTO users (user_account, user_password, name, income) VALUES
 | user_id    | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID    |
 | name       | VARCHAR(50) | NOT NULL, UNIQUE(user_id, name)      | 分類名稱     |
 
-### 📋 categories 支出分類表SQL
+### 📋 categories 交易分類表SQL
 ```sql
 CREATE TABLE categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,7 +84,7 @@ CREATE TABLE categories (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 ```
-### 📋 categories 支出分類表SQL範例
+### 📋 categories 交易分類表SQL範例
 ```sql
 INSERT INTO categories (user_id, name) VALUES
 (1, '飲食'), (1, '交通'),
