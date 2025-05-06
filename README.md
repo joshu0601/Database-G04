@@ -53,8 +53,7 @@ CREATE TABLE users (
 ```
 ### 📋 users 使用者資料表SQL範例
 ```sql
-INSERT INTO users (user_account, user_password, name, income)
-VALUES
+INSERT INTO users (user_account, user_password, name, income) VALUES
 ('xiaosong', 'pass1234', '小宋', 50000),
 ('laogao', 'safe5678', '老高', 75000),
 ('xiaoguo', 'mypwd999', '小郭', 62000);
@@ -80,8 +79,7 @@ CREATE TABLE categories (
 ```
 ### 📋 categories 支出分類表SQL範例
 ```sql
-INSERT INTO categories (user_id, name)
-VALUES
+INSERT INTO categories (user_id, name) VALUES
 (1, '飲食'),
 (1, '交通'),
 (2, '旅遊'),
@@ -119,8 +117,7 @@ CREATE TABLE expenses (
 ```
 ### 📋 expenses 支出紀錄表SQL範例
 ```sql
-INSERT INTO expenses (user_id, category_id, amount, description, expense_date)
-VALUES
+INSERT INTO expenses (user_id, category_id, amount, description, expense_date) VALUES
 (1, 1, 120, '早餐蛋餅', '2025-05-05'),
 (1, 2, 35, '公車票', '2025-05-06'),
 (2, 3, 15000, '台東三日遊', '2025-05-03'),
@@ -156,8 +153,7 @@ CREATE TABLE budgets (
 ```
 ### 📋 budgets 每月預算表SQL範例
 ```sql
-INSERT INTO budgets (user_id, category_id, year, month, budget_limit)
-VALUES
+INSERT INTO budgets (user_id, category_id, year, month, budget_limit) VALUES
 (1, 1, 2025, 5, 4000),  -- 小宋 飲食
 (1, 2, 2025, 5, 1000),  -- 小宋 交通
 (2, 3, 2025, 5, 20000), -- 老高 旅遊
@@ -196,8 +192,7 @@ CREATE TABLE saving_goals (
 ```
 ### 📋 saving_goals 儲蓄目標表SQL範例
 ```sql
-INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date)
-VALUES
+INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VALUES
 (1, '買手機', 25000, '2025-05-01', '2025-08-01'),
 (2, '環島旅行', 40000, '2025-05-01', '2025-10-01'),
 (3, '急用醫療基金', 20000, '2025-04-01', '2025-12-31');
