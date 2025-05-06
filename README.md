@@ -214,7 +214,7 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 | budgets     | budget_id  |     每一筆月預算表都有唯一的編號                             |
 | saving_goals| goal_id    |   每一個儲蓄目標都有唯一的編號                               |
 
-|    資料表    |     外鍵欄位     |  參照主資料表  |                    說明                     |
+|    資料表    |     外鍵     |  參照主資料表  |                    說明                     |
 |--------------|------------------|----------------|---------------------------------------------|
 | categories   | user_id          | users          | 每一個類別都是關聯到一位已經註冊的使用者     |
 | expenses     | user_id          | users          | 每一筆支出紀錄都是關聯到一位已經註冊的使用者 |
