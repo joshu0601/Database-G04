@@ -45,7 +45,7 @@
 | name         | VARCHAR(50)  | NOT NULL                      | 姓名    |
 | total_assets | INTEGER   |DEFAULT 0 CHECK (total_assets >= 0)| 總資產|
 | created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
-
+不能有密碼儲存在資料庫
 ### 📋 users 使用者資料表SQL
 ```sql
 CREATE TABLE users (
