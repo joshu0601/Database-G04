@@ -41,7 +41,6 @@
 |--------------|-----------|-------------------------------|------------|
 | user_id      | AUTO_INCREMENT| PRIMARY KEY                   | 使用者 ID  |
 | user_account | VARCHAR(255) | UNIQUE,NOT NULL            | 使用者帳號 |
-| user_password| VARCHAR(24)| NOT NULL                      | 使用者密碼 |
 | name         | VARCHAR(50)  | NOT NULL                      | 姓名    |
 | total_assets | INTEGER   |DEFAULT 0 CHECK (total_assets >= 0)| 總資產|
 | created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
