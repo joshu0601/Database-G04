@@ -90,7 +90,7 @@ INSERT INTO users (user_account, user_password, name, total_assets) VALUES
 
 | 欄位名稱   | 完整性限制                                                        |
 |------------|----------------------------------------------------------------|
-| category_id|     |
+| category_id|  系統會根據使用者建立的類別去照順序編號，編號是從1開始的整數，只要分類建立就會+1|
 | user_id    |     |
 | name       | 分類的名稱可以是中文字、英文字，不能有特殊符號與數字   |
 
@@ -130,15 +130,15 @@ INSERT INTO categories (user_id, name) VALUES
 ### 📋 transactions 完整性限制
 
 | 欄位名稱     | 完整性限制                                                              |
-|--------------|----------|-------------------------------------------|----------------|
+|--------------|----------------------------------------------------------------------|
 | transaction_id | 系統會根據每一筆交易建立的順序去給該交易訂單一個編號，該編號是一個整數，從1開始的，每有一筆新訂單就+1|
 | user_id      ||
 | category_id  ||
-| type         |  |
-|amount        | |
-| transaction_date |  |
-| description   |  |
-| created_at   | |
+| type         |只能是Income或Expense兩種英文單字，不能含有數字、特殊符號、除這兩個英文單字外的英文字母|
+|amount        |金額只能由0到9的數字去組成，不能為負數必須大於等於0，也不能包含文字、特殊符號|
+| transaction_date |日期格式為西元年aaaa年bb月cc日|
+| description   |說明可以由中文字、英文字Aa到Zz、數字0到9組成，但不能包含特殊符號，長度最多為255|
+| created_at   |系統會根據該交易建立當下紀錄時間，時間格式為aaaa年bb月cc日|
 
 ### 📋 transactions 交易紀錄表SQL
 ```sql
@@ -231,6 +231,20 @@ INSERT INTO budgets (user_id, category_id, year, month, budget_limit) VALUES
 | end_date       | DATE     | NOT NULL                                | 儲蓄結束日期     |
 | created_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP               | 建立時間         |
 | status     | VARCHAR(20)| DEFAULT 'Active' CHECK (status IN ('Active', 'Completed')) | 目標完成狀態|
+
+### 📋 saving_goals 完整性限制
+
+| 欄位名稱       | 完整性限制                                                             |
+|----------------|----------------------------------------------------------------------|
+| goal_id        | 系統會根據使用者建立的每個目標去照順序編號，該編號是從1開始的整數，每有一個目標就+1 |
+| user_id        |         |
+| name           | 目標名稱可以是英文、中文，不能含有數字、特殊符號，名稱長度最長可以到50個字|
+| target_amount  | 目標金額只能由0到9的數字組成，不能為負數，且不得包含文字與特殊符號|
+| current_amount | 儲蓄金額只能由0到9的數字組成，不能為負數，且不得包含文字與特殊符號，預設為0|
+| start_date     | 日期格式為 aaaa年bb月cc日，不能有文字與特殊符號|
+| end_date       | 日期格式為 aaaa年bb月cc日，不能有文字與特殊符號  |
+| created_at     | 建立時間會根據使用者建立該目標的當下去設定，格式為西元年aaaa年bb月cc日|
+| status         | 狀態是會根據該目標完成與否去給定，只能是英文字母的Active、Completed，不能含有數字、特殊符號、除這兩個單字外的英文字母|
 
 ### 📋 saving_goals 儲蓄目標表SQL
 ```sql
