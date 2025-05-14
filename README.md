@@ -45,7 +45,9 @@
 | name         | VARCHAR(50)  | NOT NULL                      | 姓名    |
 | total_assets | INTEGER   |DEFAULT 0 CHECK (total_assets >= 0)| 總資產|
 | created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
+
 不能有密碼儲存在資料庫，要另外拉資料庫
+
 ### 📋 users 限制條件
 
 | 欄位名稱      | 限制條件                                                                              |
@@ -82,7 +84,15 @@ INSERT INTO users (user_account, user_password, name, total_assets) VALUES
 |------------|----------|-----------------------------------------|--------------|
 | category_id| AUTO_INCREMENT| PRIMARY KEY                             | 分類 ID      |
 | user_id    | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID    |
-| name       | VARCHAR(50) | NOT NULL, UNIQUE(user_id, name)      | 分類名稱     |
+| name       | CHAR(50) | NOT NULL, UNIQUE(user_id, name)      | 分類名稱     |
+
+### 📋 categories 完整性限制
+
+| 欄位名稱   | 完整性限制                                                        |
+|------------|----------------------------------------------------------------|
+| category_id|     |
+| user_id    |     |
+| name       | 分類的名稱可以是中文字、英文字，不能有特殊符號與數字   |
 
 ### 📋 categories 交易分類表SQL
 ```sql
@@ -117,6 +127,19 @@ INSERT INTO categories (user_id, name) VALUES
 | description   | VARCHAR(255)|                                      | 此項交易說明  |
 | created_at   | TIMESTAMP|        DEFAULT CURRENT_TIMESTAMP         | 創建時間  |
 
+### 📋 transactions 完整性限制
+
+| 欄位名稱     | 完整性限制                                                              |
+|--------------|----------|-------------------------------------------|----------------|
+| transaction_id | 系統會根據每一筆交易建立的順序去給該交易訂單一個編號，該編號是一個整數，從1開始的，每有一筆新訂單就+1|
+| user_id      ||
+| category_id  ||
+| type         |  |
+|amount        | |
+| transaction_date |  |
+| description   |  |
+| created_at   | |
+
 ### 📋 transactions 交易紀錄表SQL
 ```sql
 CREATE TABLE transactions (
@@ -132,7 +155,7 @@ CREATE TABLE transactions (
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 ```
-### 📋 expenses 交易紀錄表SQL範例
+### 📋 transactions 交易紀錄表SQL範例
 ```sql
 INSERT INTO transactions (user_id, type, amount, category_id, transaction_date, description)
 VALUES
@@ -158,6 +181,18 @@ VALUES
 | month        | INTEGER  | NOT NULL, CHECK (month BETWEEN 1 AND 12)            | 月份             |
 | budget_limit | INTEGER  | NOT NULL, CHECK (budget_limit >= 0)                 | 分類預算金額     |
 | spent_amount | INTEGER  | DEFAULT 0 CHECK (spent_amount >= 0)                 | 已花費預算       |
+
+### 📋 budgets 完整性限制
+
+| 欄位名稱     | 完整性限制                                                                          |
+|--------------|----------------------------------------------------------------------------------|
+| budget_id    | 系統會根據每個使用者建立預算表照順序給該表編號，此編號為由1開始的整數，有新的預算表就+1|
+| user_id      |  |
+| category_id  |  |
+| year         | 年份為西元年，年份由四個數字組成，開頭不得為0，後三碼可以是0~9的數字去組成，不得含有文字、特殊符號|
+| month        | 只能由數字1到12任一，不能含有文字、特殊符號|
+| budget_limit | 只能有數字0到9去組成，不能含有文字、特殊符號，且該數字必須大於等於0，不得為負數   |
+| spent_amount | 只能有數字0到9去組成，不能含有文字、特殊符號，且該數字必須大於等於0，不得為負數   |
 
 ### 📋 budgets 每月預算表SQL
 ```sql
@@ -221,7 +256,7 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 (4, '退休儲蓄目標', 1000000, '2025-01-01', '2035-01-01');
 ```
 ---
-### 完整性限制
+### 主鍵外鍵
 | 資料表(Table)      |     主鍵(Primary Key)    |                  說明                 |
 |-------------|------------|-----------------------------------------------------------|
 | users       | user_id    |                  每個使用者都有唯一的號碼來辨識身分          |
