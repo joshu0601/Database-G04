@@ -16,6 +16,7 @@ type AuthContextType = {
   logout: () => void
   register: (name: string, email: string, password: string) => Promise<void>
   isLoading: boolean
+  isAuthenticated: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -23,29 +24,49 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
 
-  // 檢查 JWT 是否存在並有效
+  // 立即檢查 token 是否存在
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token) {
+      setIsLoading(false) // 如果沒有 token，立即結束載入狀態
+    }
+  }, [])
+
+  // 驗證 JWT 並設置用戶狀態
   useEffect(() => {
     const checkSession = async () => {
       try {
         const token = localStorage.getItem("jwtToken")
-        if (token) {
-          // 假設有一個 API 驗證 JWT 的有效性
-          const response = await fetch("/api/verify-token", {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          if (response.ok) {
-            const userData = await response.json()
-            setUser(userData)
-          } else {
-            localStorage.removeItem("jwtToken")
-          }
+        if (!token) {
+          return // 已在上面的 useEffect 處理了
+        }
+
+        // 創建帶有超時的請求
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 3000) // 3秒超時
+        
+        const response = await fetch("/api/verify-token", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (response.ok) {
+          const userData = await response.json()
+          setUser(userData.user)
+          setIsAuthenticated(true)
+        } else {
+          localStorage.removeItem("jwtToken")
         }
       } catch (error) {
         console.error("Error verifying token:", error)
+        localStorage.removeItem("jwtToken")
       } finally {
         setIsLoading(false)
       }
@@ -54,18 +75,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkSession()
   }, [])
 
-  // 處理受保護路由
+  // 處理路由重定向 - 只在身份驗證狀態改變後執行
   useEffect(() => {
-    if (!isLoading) {
-      const isAuthRoute = pathname?.includes("login") || pathname?.includes("register")
-      if (!user && !isAuthRoute) {
-        router.push("/login")
-      } else if (user && isAuthRoute) {
-        router.push("/")
-      }
-    }
-  }, [user, isLoading, pathname, router])
+    if (isLoading) return // 還在載入中，不處理路由
 
+    const isAuthRoute = pathname?.includes("login") || pathname?.includes("register")
+    
+    if (!isAuthenticated && !isAuthRoute) {
+      // 如果用戶未驗證且當前路由不是登入或註冊頁面，則重定向
+      router.replace("/login")
+    } else if (isAuthenticated && isAuthRoute) {
+      router.replace("/")
+    }
+  }, [isAuthenticated, isLoading, pathname, router])
+
+  // 登入函數 - 緩存用戶資料
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
@@ -74,12 +98,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       })
-      console.log("Login response:", response)
+      
       if (!response.ok) throw new Error("登入失敗")
       const { token, user } = await response.json()
+      
       localStorage.setItem("jwtToken", token)
+      localStorage.setItem("userData", JSON.stringify(user)) // 緩存用戶資料
+      
       setUser(user)
-      router.push("/")
+      setIsAuthenticated(true)
+      router.replace("/")
     } catch (error) {
       console.error("Login failed:", error)
       throw error
@@ -87,6 +115,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false)
     }
   }
+
+
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true)
     try {
@@ -97,10 +127,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (!response.ok) throw new Error("註冊失敗")
       
-      // 移除 setUser(user) 這一行，不設置用戶狀態
-      // 僅導向到登入頁面
-      router.push("/login")
-      return true // 返回成功標誌
+      router.replace("/login")
+      return true
     } catch (error) {
       console.error("Registration failed:", error)
       throw error
@@ -108,14 +136,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false)
     }
   }
+
   const logout = () => {
     setUser(null)
+    setIsAuthenticated(false)
     localStorage.removeItem("jwtToken")
-    router.push("/login")
+    localStorage.removeItem("userData")
+    router.replace("/login")
+  }
+
+  // 條件渲染：只有在驗證完成後才顯示內容
+  if (isLoading) {
+    return <div className="flex h-screen w-full items-center justify-center">正在加載...</div>
   }
 
   return (
-    <AuthContext.Provider value={{ user, login ,register,logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isLoading, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   )
