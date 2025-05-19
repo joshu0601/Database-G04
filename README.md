@@ -290,8 +290,8 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 
 ### VIEW設計
 
-| 名稱     | 選擇的屬性                                                                          |
-|--------------|----------------------------------------------------------------------------------|
+| 名稱                   | 選擇的屬性                                                                          |
+|:------------------------:|:----------------------------------------------------------------------------------:|
 |   所有人儲蓄目標進度   | saving_goals(goal_id,name,target_amount,current_amount,start_date,end_date,created_at,status),users(name)|
 |    所有人交易紀錄      | transactions(transaction_id,type,amount,transaction_date,description,created_at),categories(name),users(name) |
 |  所有人個人資料        | users(user_id,user_account,name,total_assets,created_at),transactions(type,amount) |
