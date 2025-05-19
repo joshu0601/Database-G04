@@ -39,7 +39,7 @@
 
 | 欄位名稱      | 資料型別  | 限制條件                      | 說明       |
 |--------------|-----------|-------------------------------|------------|
-| user_id      | AUTO_INCREMENT| PRIMARY KEY                   | 使用者 ID  |
+| user_id      | INTEGER | PRIMARY KEY                   | 使用者 ID  |
 | user_account | VARCHAR(255) | UNIQUE,NOT NULL            | 使用者帳號 |
 | name         | VARCHAR(50)  | NOT NULL                      | 姓名    |
 | total_assets | INTEGER   |DEFAULT 0 CHECK (total_assets >= 0)| 總資產|
@@ -81,7 +81,7 @@ INSERT INTO users (user_account, user_password, name, total_assets) VALUES
 
 | 欄位名稱   | 資料型別 | 限制條件                                | 說明         |
 |------------|----------|-----------------------------------------|--------------|
-| category_id| AUTO_INCREMENT| PRIMARY KEY                             | 分類 ID      |
+| category_id| INTEGER  | PRIMARY KEY                             | 分類 ID      |
 | user_id    | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID    |
 | name       | CHAR(50) | NOT NULL, UNIQUE(user_id, name)      | 分類名稱     |
 
@@ -117,13 +117,13 @@ INSERT INTO categories (user_id, name) VALUES
 
 | 欄位名稱     | 資料型別 | 限制條件                                  | 說明           |
 |--------------|----------|-------------------------------------------|----------------|
-| transaction_id   | AUTO_INCREMENT   | PRIMARY KEY                   | 交易 ID|
+| transaction_id   | INTEGER   | PRIMARY KEY                   | 交易 ID|
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID     |
-| type         | ENUM('Income', 'Expense')|  NOT NULL                  | 收入支出分類    |
-|amount        |INT|               NOT NULL CHECK (amount >= 0)        | 金額       |
+| type         | CHAR(7)  |  NOT NULL CHECK(type='Income'ORtype='Expense')| 收入支出分類    |
+| amount       |INT|               NOT NULL CHECK (amount >= 0)        | 金額       |
 | transaction_date | DATE     | NOT NULL                             | 交易日期       |
-| description   | VARCHAR(255)|                                      | 此項交易說明  |
+| description   | CHAR(255)|                                      | 此項交易說明  |
 | created_at   | TIMESTAMP|        DEFAULT CURRENT_TIMESTAMP         | 創建時間  |
 
 ### 📋 transactions 完整性限制
@@ -144,11 +144,11 @@ INSERT INTO categories (user_id, name) VALUES
 CREATE TABLE transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    type ENUM('Income', 'Expense') NOT NULL,
+    type CHAR(7) NOT NULL CHECK(type='Income'ORtype='Expense'),
     amount INT NOT NULL CHECK (amount >= 0),
     category_id INT,
     transaction_date DATE NOT NULL,
-    description VARCHAR(255),
+    description CHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
@@ -173,7 +173,7 @@ VALUES
 
 | 欄位名稱     | 資料型別 | 限制條件                                            | 說明             |
 |--------------|----------|-----------------------------------------------------|------------------|
-| budget_id    | AUTO_INCREMENT   | PRIMARY KEY                                 | 預算 ID         |
+| budget_id    | INTEGER  | PRIMARY KEY                                 | 預算 ID         |
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)                        | 使用者 ID        |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)               | 分類 ID          |
 | year         | INTEGER  | NOT NULL                                            | 年份             |
@@ -221,7 +221,7 @@ INSERT INTO budgets (user_id, category_id, year, month, budget_limit) VALUES
 
 | 欄位名稱       | 資料型別 | 限制條件                                | 說明             |
 |----------------|----------|-----------------------------------------|------------------|
-| goal_id        | AUTO_INCREMENT   | PRIMARY KEY                             | 目標 ID  |
+| goal_id        | INTEGER   | PRIMARY KEY                             | 目標 ID  |
 | user_id        | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID        |
 | name           | VARCHAR(50) | NOT NULL                             | 儲蓄目標名稱     |
 | target_amount  | INTEGER  | NOT NULL, CHECK (target_amount > 0)     | 目標金額         |
@@ -287,6 +287,74 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 | budgets      | category_id      | categories     | 每個每月預算表會屬於一個已經建立的類別       |
 | saving_goals | user_id          | users          | 每個儲蓄目標表會關聯到一個已經註冊的使用者    |
 ---
+
+### VIEW設計
+
+| 名稱     | 選擇的屬性                                                                          |
+|--------------|----------------------------------------------------------------------------------|
+|   所有人儲蓄目標進度   | saving_goals(goal_id,name,target_amount,current_amount,start_date,end_date,created_at,status),users(name)|
+|    所有人交易紀錄      | transactions(transaction_id,type,amount,transaction_date,description,created_at),categories(name),users(name) |
+|  所有人個人資料        | users(user_id,user_account,name,total_assets,created_at),transactions(type,amount) |
+|  所有人所有分類的總收入與總支出 | users(user_id,name),categories(category_id,name),transactions(type,amount) |
+
+### 所有人儲蓄目標進度VIEW表SQL
+```sql
+CREATE VIEW saving_goal_status AS
+SELECT 
+    sg.goal_id,
+    u.name AS user_name,
+    sg.name AS goal_name,
+    sg.target_amount,
+    sg.current_amount,
+    sg.status,
+FROM saving_goals sg
+JOIN users u ON sg.user_id = u.user_id;
+```
+### 所有人交易紀錄VIEW表SQL
+```sql
+CREATE VIEW user_transaction_history AS
+SELECT 
+    t.transaction_id,
+    u.name AS user_name,
+    t.type,
+    t.amount,
+    c.name AS category_name,
+    t.transaction_date,
+    t.description,
+    t.created_at
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id
+JOIN categories c ON t.category_id = c.category_id;
+```
+### 所有人個人資料VIEW表SQL
+```sql
+CREATE VIEW user_financial_summary AS
+SELECT 
+    u.user_id,
+    u.name,
+    u.user_account,
+    u.total_assets,
+    IFNULL(SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END), 0) AS total_income,
+    IFNULL(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) AS total_expense
+FROM users u
+LEFT JOIN transactions t ON u.user_id = t.user_id
+GROUP BY u.user_id, u.name, u.user_account, u.total_assets;
+```
+### 所有人所有分類的總收入與總支出VIEW表SQL
+```sql
+CREATE VIEW user_category_summary AS
+SELECT
+    u.user_id,
+    u.name AS user_name,
+    c.category_id,
+    c.name AS category_name,
+    IFNULL(SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END), 0) AS total_income,
+    IFNULL(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) AS total_expense
+FROM users u
+JOIN categories c ON u.user_id = c.user_id
+LEFT JOIN transactions t ON t.user_id = u.user_id AND t.category_id = c.category_id
+GROUP BY u.user_id, u.name, c.category_id, c.name;
+```
 
 ## ER Diagram(改)
 
