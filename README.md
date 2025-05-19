@@ -372,5 +372,5 @@ GROUP BY u.user_id, u.name, c.category_id, c.name;
 | [郭建杰](./profile/郭建杰.md) | 41143232 | 資工三乙 | 
 
 ## 簡報
-[📥 點我下載簡報](https://github.com/joshu0601/Database-G04/report/資料庫報告_期中.pptx)
+[📥 點我下載簡報](https://github.com/joshu0601/Database-G04/raw/main/report/資料庫報告_期中.pptx)
 
