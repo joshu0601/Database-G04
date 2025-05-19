@@ -306,7 +306,7 @@ SELECT
     sg.name AS goal_name,
     sg.target_amount,
     sg.current_amount,
-    sg.status,
+    sg.status
 FROM saving_goals sg
 JOIN users u ON sg.user_id = u.user_id;
 ```
