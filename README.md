@@ -144,7 +144,7 @@ INSERT INTO categories (user_id, name) VALUES
 CREATE TABLE transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    type CHAR(7) NOT NULL CHECK(type='Income'ORtype='Expense'),
+    type VARCHAR(10) NOT NULL CHECK (type = 'Income' OR type = 'Expense'),
     amount INT NOT NULL CHECK (amount >= 0),
     category_id INT,
     transaction_date DATE NOT NULL,
