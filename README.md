@@ -374,3 +374,6 @@ GROUP BY u.user_id, u.name, c.category_id, c.name;
 ## 簡報
 [📥 點我下載簡報](https://github.com/joshu0601/Database-G04/raw/main/report/資料庫報告_期中.pptx)
 
+## 報告
+[📥 點我下載簡報](https://github.com/joshu0601/Database-G04/raw/main/report/資料庫期末報告.docx)
+
