@@ -381,8 +381,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'customer'@'%';
 ```
 
 #### 2. 管理者
-| 資料表 | 權限 |
-|-------|----------|
+| 資料表 | 權限 | 說明 |
+|-------|----------|--------|
 | users   | 讀寫所有人 |管理帳號|
 |transactions|讀寫所有人 |收支紀錄|
 |categories | 讀寫所有人 |類別管理|
@@ -401,8 +401,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'manager'@'%';
 
 
 #### 3. 備份人員
-| 資料表 | 權限 |
-|-------|----------|
+| 資料表 | 權限 | 說明 |
+|-------|----------|----------|
 | users   | 只讀所有人 |管理帳號|
 |transactions|只讀所有人 |收支紀錄|
 |categories | 只讀所有人 |類別管理|
