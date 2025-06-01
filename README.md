@@ -35,6 +35,39 @@
 | 支出統計與趨勢分析 | 張三，30 歲公司會計師    | 系統自動生成圖表顯示支出比例，幫助他跟老闆報告目前公司的收支情形。                               |
 
 ## 資料表
+
+### 📋 managers 管理員資料表
+
+| 欄位名稱          | 資料型別  | 限制條件                       | 說明       |
+|------------------|-----------|-------------------------------|------------|
+| managers_id      | INTEGER | PRIMARY KEY                     | 管理員 ID  |
+| managers_account | VARCHAR(255) | UNIQUE,NOT NULL            | 管理員帳號 |
+| managersname     | VARCHAR(50)  | NOT NULL                   | 姓名       |
+| created_at       | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
+
+密碼存在另外的資料庫。
+
+### 📋 managers 管理員資料表
+
+| 欄位名稱      | 限制條件                                                                                  |
+|--------------|-------------------------------------------------------------------------------------------|
+| managers_id      | 系統會依照管理員建立順序去對每個管理員給一個整數當作ID，該整數是從1開始的，每多一個管理員就+1 |
+| managers_account | [1]                                                                                   |
+| managersname     | 名稱只能是英文字母大小寫Aa到Zz、中文字，但不能有其他外文或特殊符號存在，長度最多為50         |
+| created_at       | 建立時間格式為 yyyy-mm-dd，系統會設定使用者建立當下的時間為預設值                          |
+---
+[1]格式為 local-part@domain。local-part 僅能包含英文字母 a–z、A–Z、數字 0–9、特殊符號 !#$%&'*+-/=?^_`{|}~ 和 `.`，但點號不可作為開頭、結尾，亦不可連續出現，系統不接受 `"..."@domain` 的引號格式。<br>domain 為以點分隔的字串，每段最多 63 字元，總長不超過 255 字元，只能包含英數與 `-`（不可作為開頭或結尾），系統亦不接受 (test) 注釋形式。
+### 📋 managers 管理員資料表 SQL
+```sql
+CREATE TABLE managers (
+    managers_id INT AUTO_INCREMENT PRIMARY KEY,
+    managers_account VARCHAR(255) UNIQUE NOT NULL,
+    managersname VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+---
+
 ### 📋 users 使用者資料表
 
 | 欄位名稱      | 資料型別  | 限制條件                      | 說明       |
@@ -312,7 +345,7 @@ CREATE TABLE feedback_reports (
 | 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
 |----------------|----------|---------------------------------------------------------|------------------|
 | blacklist_id   | INTEGER  | PRIMARY KEY                                              | 黑名單 ID        |
-| user_account   | CHAR(50) | FOREIGN KEY → users(user_account)                        |  使用者帳號       |
+| user_account   | CHAR(255) | FOREIGN KEY → users(user_account)                       |  使用者帳號       |
 | reason         | CHAR(200)| NOT NULL                                                 | 封鎖原因         |
 | blocked_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP	                               | 封鎖時間          |
 | blocked_by     | INT      |FOREIGN KEY → managers(manager_id)                        | 哪個管理員封鎖的   |
