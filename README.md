@@ -360,6 +360,65 @@ LEFT JOIN transactions t ON t.user_id = u.user_id AND t.category_id = c.category
 GROUP BY u.user_id, u.name, c.category_id, c.name;
 ```
 
+## 使用者權限設定
+#### 1. 一般使用者
+| 資料表 | 權限 | 說明 |
+|---------|---------|------|
+| users   | 讀寫自己 |管理帳號|
+|transactions|讀寫自己 |收支紀錄|
+|categories | 讀寫自己 |類別管理|
+|budgets    | 讀寫自己 |預算設定|
+|saving_goals|讀寫自己 |儲蓄目標|
+|VIEW表     | 讀寫自己 |僅供讀四個VIEW表|
+|資料庫結構修改| 無法   |僅管理者可改 schema|
+|資料備份/匯出 | 無法   |
+
+#### SQL語法
+
+```sql
+CREATE USER 'customer'@'%' IDENTIFIED BY '1234';
+GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'customer'@'%';
+```
+
+#### 2. 管理者
+| 資料表 | 權限 |
+|-------|----------|
+| users   | 讀寫所有人 |管理帳號|
+|transactions|讀寫所有人 |收支紀錄|
+|categories | 讀寫所有人 |類別管理|
+|budgets    | 讀寫所有人 |預算設定|
+|saving_goals|讀寫所有人 |儲蓄目標|
+|VIEW表     | 讀寫所有人 |僅供讀四個VIEW表|
+|資料庫結構修改| 可以   |僅管理者可改 schema|
+|資料備份/匯出 | 可以   |
+
+#### SQL語法
+
+```sql
+CREATE USER 'manager'@'%' IDENTIFIED BY '5678';
+GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'manager'@'%';
+```
+
+
+#### 3. 備份人員
+| 資料表 | 權限 |
+|-------|----------|
+| users   | 只讀所有人 |管理帳號|
+|transactions|只讀所有人 |收支紀錄|
+|categories | 只讀所有人 |類別管理|
+|budgets    | 只讀所有人 |預算設定|
+|saving_goals|只讀所有人 |儲蓄目標|
+|VIEW表     | 只讀所有人 |僅供讀四個VIEW表|
+|資料庫結構修改| 無法   |僅管理者可改 schema|
+|資料備份/匯出 | 可以   |
+
+#### SQL語法
+
+```sql
+CREATE USER 'backup'@'%' IDENTIFIED BY '4321';
+GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
+```
+
 ## ER Diagram(改)
 
 ![ER 圖](image/0601ER.png)
