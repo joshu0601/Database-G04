@@ -274,7 +274,7 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 
 | 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
 |----------------|----------|---------------------------------------------------------|------------------|
-| report_id      | INTEGER   | PRIMARY KEY                                            | 目標 ID          |
+| report_id      | INTEGER   | PRIMARY KEY                                            | 回報清單 ID       |
 | user_id        | INTEGER   | FOREIGN KEY → users(user_id)                           | 使用者 ID        |
 | report_type    | CHAR(10)  | NOT NULL,  CHECK (reprot_type IN ('Bug', 'Suggestion'))| 回報類型         |
 | title          | CHAR(100) | NOT NULL                                               | 標題             |
@@ -302,6 +302,43 @@ CREATE TABLE feedback_reports (
     content CHAR(200) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+```
+
+
+---
+### 📋 blacklist 黑名單
+
+| 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
+|----------------|----------|---------------------------------------------------------|------------------|
+| blacklist_id   | INTEGER  | PRIMARY KEY                                              | 黑名單 ID        |
+| user_account   | CHAR(50) | FOREIGN KEY → users(user_account)                        |  使用者帳號       |
+| reason         | CHAR(200)| NOT NULL                                                 | 封鎖原因         |
+| blocked_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP	                               | 封鎖時間          |
+| blocked_by     | INT      |FOREIGN KEY → managers(manager_id)                        | 哪個管理員封鎖的   |
+
+### 📋 blacklist 黑名單
+
+| 欄位名稱       | 完整性限制                                                             |
+|----------------|----------------------------------------------------------------------|
+| blacklist_id   |由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。 |
+| user_account   |[2]|
+| reason         | 可以由文字、英文、數字組成，不能含有特殊符號且長度不超過200個字。|
+| blocked_at     | 格式YYYY-MM-DD hh-mm-ss，系統會根據當前時間去設定欄位。 |
+| blocked_by     |由數字組成的管理員ID，根據管理員數量去增加ID編碼。 |
+
+[2]格式為 local-part@domain。local-part 僅能包含英文字母 a–z、A–Z、數字 0–9、特殊符號 !#$%&'*+-/=?^_`{|}~ 和 `.`，但點號不可作為開頭、結尾，亦不可連續出現，系統不接受 `"..."@domain` 的引號格式。<br>domain 為以點分隔的字串，每段最多 63 字元，總長不超過 255 字元，只能包含英數與 `-`（不可作為開頭或結尾），系統亦不接受 (test) 注釋形式。
+
+### 📋  blacklist 黑名單
+```sql
+CREATE TABLE blacklist (
+    blacklist_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_account CHAR(50),
+    reason CHAR(200) NOT NULL,
+    blocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    blocked_by INT,
+    FOREIGN KEY (user_account) REFERENCES users(user_account),
+    FOREIGN KEY (blocked_by) REFERENCES managers(manager_id)
 );
 ```
 
