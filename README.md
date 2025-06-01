@@ -306,7 +306,7 @@ SELECT
     sg.name AS goal_name,
     sg.target_amount,
     sg.current_amount,
-    sg.status
+    sg.status,
     CASE 
         WHEN DATEDIFF(sg.end_date, CURDATE()) < 0 THEN 0
         ELSE DATEDIFF(sg.end_date, CURDATE())
