@@ -45,7 +45,7 @@
 | total_assets | INTEGER   |DEFAULT 0 CHECK (total_assets >= 0)| 總資產|
 | created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
 
-不能有密碼儲存在資料庫，要另外拉資料庫
+密碼存在另外的資料庫。
 
 ### 📋 users 限制條件
 
