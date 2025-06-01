@@ -40,9 +40,9 @@
 
 | 欄位名稱          | 資料型別  | 限制條件                       | 說明       |
 |------------------|-----------|-------------------------------|------------|
-| managers_id      | INTEGER | PRIMARY KEY                     | 管理員 ID  |
-| managers_account | VARCHAR(255) | UNIQUE,NOT NULL            | 管理員帳號 |
-| managersname     | VARCHAR(50)  | NOT NULL                   | 姓名       |
+| managers_id      | INTEGER   | PRIMARY KEY                     | 管理員 ID  |
+| managers_account | CHAR(255) | UNIQUE,NOT NULL            | 管理員帳號 |
+| managersname     | CHAR(50)  | NOT NULL                   | 姓名       |
 | created_at       | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
 
 密碼存在另外的資料庫。
@@ -61,8 +61,8 @@
 ```sql
 CREATE TABLE managers (
     managers_id INT AUTO_INCREMENT PRIMARY KEY,
-    managers_account VARCHAR(255) UNIQUE NOT NULL,
-    managersname VARCHAR(50) NOT NULL,
+    managers_account CHAR(255) UNIQUE NOT NULL,
+    managersname CHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
