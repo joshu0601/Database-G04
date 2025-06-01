@@ -307,6 +307,10 @@ SELECT
     sg.target_amount,
     sg.current_amount,
     sg.status
+    CASE 
+        WHEN DATEDIFF(sg.end_date, CURDATE()) < 0 THEN 0
+        ELSE DATEDIFF(sg.end_date, CURDATE())
+    END AS remaining_days
 FROM saving_goals sg
 JOIN users u ON sg.user_id = u.user_id;
 ```
