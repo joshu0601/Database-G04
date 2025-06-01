@@ -432,8 +432,7 @@ SELECT
     t.amount,
     c.name AS category_name,
     t.transaction_date,
-    t.description,
-    t.created_at
+    t.description
 FROM transactions t
 JOIN users u ON t.user_id = u.user_id
 JOIN categories c ON t.category_id = c.category_id;
