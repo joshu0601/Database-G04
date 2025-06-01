@@ -270,6 +270,44 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 (4, '退休儲蓄目標', 1000000, '2025-01-01', '2035-01-01');
 ```
 ---
+### 📋 feedback_reports 使用者問題回報與建議表
+
+| 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
+|----------------|----------|---------------------------------------------------------|------------------|
+| report_id      | INTEGER   | PRIMARY KEY                                            | 目標 ID          |
+| user_id        | INTEGER   | FOREIGN KEY → users(user_id)                           | 使用者 ID        |
+| report_type    | CHAR(10)  | NOT NULL,  CHECK (reprot_type IN ('Bug', 'Suggestion'))| 回報類型         |
+| title          | CHAR(100) | NOT NULL                                               | 標題             |
+| content        | CHAR(200) |NOT NULL                                                 | 內容           |
+| created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                              | 回報時間         |
+
+### 📋 feedback_reports 使用者問題回報與建議表
+
+| 欄位名稱       | 完整性限制                                                             |
+|----------------|----------------------------------------------------------------------|
+| report_id      | 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
+| user_id        |根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
+| report_type    |只能是'Bug', 'Suggestion'兩種英文單字，不能有其他數字、文字、英文、特殊符號參雜。 |
+| title          | 可以是英文、文字、數字組成，不能含有特殊符號，且總長不超過100個字。|
+| content        | 可以是英文、文字、數字組成，不能含有特殊符號，且總長不超過100個字。 |
+| created_at     | 格式YYYY-MM-DD hh-mm-ss，系統會根據當前時間去設定欄位。|
+
+### 📋  feedback_reports 使用者問題回報與建議表 SQL
+```sql
+CREATE TABLE feedback_reports (
+    report_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    report_type CHAR(10) NOT NULL CHECK (report_type IN ('Bug', 'Suggestion')),
+    title CHAR(100) NOT NULL,
+    content CHAR(200) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+```
+
+
+
+---
 ### 主鍵外鍵
 | 資料表(Table)      |     主鍵(Primary Key)    |                  說明                 |
 |-------------|------------|-----------------------------------------------------------|
