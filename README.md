@@ -435,7 +435,49 @@ CREATE TABLE blacklist (
 ```
 
 
+---
+### 📋 debt 債務表
 
+| 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
+|----------------|----------|---------------------------------------------------------|------------------|
+| debt_id        |INTEGER   | PRIMARY KEY                                            | 回報清單 ID       |
+| user_id        |INTEGER   | FOREIGN KEY → users(user_id)                           | 使用者 ID         |
+| debt_name        |CHAR(50)  | NOT NULL                                             | 回報類型         |
+| debt_amount      | INTEGER | NOT NULL                                              | 負債金額         |
+| remaining_amount | INTEGER |NOT NULL                                               | 剩餘債務         |
+| interest_rate     | DEFAULT(15,2) |  DEFAULT 0                                     |利率              |
+| start_date     | TIMESTAMP | NOT NULL                                               | 債務開始時間     |
+| due_date     | TIMESTAMP | NOT NULL                                                 | 預計還清時間     |
+| status     | CHAR(8) | DEFAULT 'Active',CHECK('Active','Paid off')                  | 債務還款狀況     |
+| created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                              |債務表建立時間    |
+
+### 📋 debt 債務表
+
+| 欄位名稱       | 完整性限制                                                             |
+|----------------|----------------------------------------------------------------------|
+| debt_id        |由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
+| user_id        |根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
+| debt_name        |可以由中文、英文組成，不能含有數字、特殊符號。 |
+| debt_amount      | 可以由數字0~9組成，不能含有文字、特殊符號。|
+| remaining_amount | 可以由數字0~9組成，不能含有文字、特殊符號。|
+| interest_rate    |  只能由數字組成，不能含有文字、特殊符號。不能為負數且不得大於50。|
+| start_date     | 格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。 |
+| due_date     |格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。 |
+| status     |只能是'Active','Paid off'兩種英文單字，不能含有其他文字或數字、特殊符號。 |
+| created_at     | 格式YYYY-MM-DD hh-mm-ss，系統會根據當前時間去設定欄位。|
+
+### 📋  debt 債務表 SQL
+```sql
+CREATE TABLE feedback_reports (
+    debt_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    report_type CHAR(10) NOT NULL CHECK (report_type IN ('Bug', 'Suggestion')),
+    title CHAR(100) NOT NULL,
+    content CHAR(200) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+```
 ---
 ### 主鍵外鍵
 | 資料表(Table)      |     主鍵(Primary Key)    |                  說明                 |
