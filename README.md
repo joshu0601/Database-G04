@@ -201,6 +201,61 @@ VALUES
 (4, 'Income', 60000, 8, '2025-05-01', '月薪 #公司'), -- 張三的收入
 (4, 'Expense', 3200, 7, '2025-05-01', '部門聚餐'), -- 張三的支出
 ```
+
+
+---
+
+### 📋 Monthly_amount 每月收支表
+
+| 欄位名稱     | 資料型別 | 限制條件                                  | 說明           |
+|--------------|----------|-------------------------------------------|----------------|
+| Monthly_id   | INTEGER   | PRIMARY KEY                   | 收支 ID|
+| user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID |
+| category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID     |
+| type         | CHAR(7)  |  NOT NULL CHECK(type='Income'ORtype='Expense')| 收入支出分類    |
+| amount       |INT|               NOT NULL CHECK (amount >= 0)        | 金額       |
+| description   | CHAR(255)|                                      | 此項收支說明  |
+| created_at   | TIMESTAMP|        DEFAULT CURRENT_TIMESTAMP         | 創建時間  |
+
+### 📋 Monthly_amount 完整性限制
+
+| 欄位名稱     | 完整性限制                                                              |
+|--------------|----------------------------------------------------------------------|
+| Monthly_id | 系統會根據每一筆交易建立的順序去給該交易訂單一個編號，該編號是一個整數，從1開始的，每有一筆新訂單就+1|
+| user_id      |由整數組成，不包含特殊符號、文字|
+| category_id  |由整數組成，不包含特殊符號、文字|
+| type         |只能是Income或Expense兩種英文單字，不能含有數字、特殊符號、除這兩個英文單字外的英文字母|
+|amount        |金額只能由0到9的數字去組成，不能為負數必須大於等於0，也不能包含文字、特殊符號|
+| description   |說明可以由中文字、英文字Aa到Zz、數字0到9組成，但不能包含特殊符號，長度最多為255|
+| created_at   |系統會根據該交易建立當下紀錄時間，時間格式為yyyy年mm月dd日|
+
+### 📋 Monthly_amount 交易紀錄表SQL
+```sql
+CREATE TABLE Monthly_amount (
+    Monthly_amount_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    type VARCHAR(10) NOT NULL CHECK (type = 'Income' OR type = 'Expense'),
+    amount INT NOT NULL CHECK (amount >= 0),
+    category_id INT,
+    description CHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
+```
+### 📋 Monthly_amount 每月收支表SQL範例
+```sql
+INSERT INTO transactions (user_id, type, amount, category_id, transaction_date, description)
+VALUES
+(1, 'Income', 35000, 2, '2025-05-01', '五月薪資'), -- 小宋的月薪
+(1, 'Expense', 180, 1, '2025-05-02', '便當 #午餐'), -- 小宋的支出
+(2, 'Income', 8000, 4, '2025-05-01', '兼職收入'), -- 老高的收入
+(2, 'Expense', 120, 3, '2025-05-02', '滷味宵夜 #朋友聚餐'), -- 老高的支出
+(3, 'Income', 28000, 6, '2025-05-01', '五月薪資'), -- 小郭的收入
+(3, 'Expense', 1500, 5, '2025-05-05', '雲林高鐵票'), -- 小郭的支出
+(4, 'Income', 60000, 8, '2025-05-01', '月薪 #公司'), -- 張三的收入
+(4, 'Expense', 3200, 7, '2025-05-01', '部門聚餐'), -- 張三的支出
+```
 ---
 
 ### 📋 budgets 每月預算表
