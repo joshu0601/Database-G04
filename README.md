@@ -73,8 +73,8 @@ CREATE TABLE managers (
 | 欄位名稱      | 資料型別  | 限制條件                      | 說明       |
 |--------------|-----------|-------------------------------|------------|
 | user_id      | INTEGER | PRIMARY KEY                   | 使用者 ID  |
-| user_account | VARCHAR(255) | UNIQUE,NOT NULL            | 使用者帳號 |
-| name         | VARCHAR(50)  | NOT NULL                      | 姓名    |
+| user_account | CHAR(255) | UNIQUE,NOT NULL            | 使用者帳號 |
+| name         | CHAR(50)  | NOT NULL                      | 姓名    |
 | total_assets | INTEGER   |DEFAULT 0 CHECK (total_assets >= 0)| 總資產|
 | created_at   | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
 
@@ -95,8 +95,8 @@ CREATE TABLE managers (
 ```sql
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_account VARCHAR(255) NOT NULL UNIQUE,
-    user_password VARCHAR(24) NOT NULL,
+    user_account CHAR(255) NOT NULL UNIQUE,
+    user_password CHAR(24) NOT NULL,
     name VARCHAR(50) NOT NULL,
     total_assets INT DEFAULT 0 CHECK (total_assets >= 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -132,7 +132,7 @@ INSERT INTO users (user_account, user_password, name, total_assets) VALUES
 CREATE TABLE categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    name VARCHAR(50) NOT NULL,
+    name CHAR(50) NOT NULL,
     UNIQUE (user_id, name),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -178,7 +178,7 @@ INSERT INTO categories (user_id, name) VALUES
 CREATE TABLE transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    type VARCHAR(10) NOT NULL CHECK (type = 'Income' OR type = 'Expense'),
+    type CHAR(10) NOT NULL CHECK (type = 'Income' OR type = 'Expense'),
     amount INT NOT NULL CHECK (amount >= 0),
     category_id INT,
     transaction_date DATE NOT NULL,
@@ -234,7 +234,7 @@ VALUES
 CREATE TABLE Monthly_amount (
     Monthly_amount_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    type VARCHAR(10) NOT NULL CHECK (type = 'Income' OR type = 'Expense'),
+    type CHAR(10) NOT NULL CHECK (type = 'Income' OR type = 'Expense'),
     amount INT NOT NULL CHECK (amount >= 0),
     category_id INT,
     description CHAR(255),
@@ -262,7 +262,7 @@ VALUES
 
 | 欄位名稱     | 資料型別 | 限制條件                                            | 說明             |
 |--------------|----------|-----------------------------------------------------|------------------|
-| budget_id    | INTEGER  | PRIMARY KEY                                 | 預算 ID         |
+| budget_id    | INTEGER  | PRIMARY KEY                                         | 預算 ID         |
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)                        | 使用者 ID        |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)               | 分類 ID          |
 | year         | INTEGER  | NOT NULL                                            | 年份             |
@@ -312,7 +312,7 @@ INSERT INTO budgets (user_id, category_id, year, month, budget_limit) VALUES
 |----------------|----------|-----------------------------------------|------------------|
 | goal_id        | INTEGER   | PRIMARY KEY                             | 目標 ID  |
 | user_id        | INTEGER  | FOREIGN KEY → users(user_id)            | 使用者 ID        |
-| name           | VARCHAR(50) | NOT NULL                             | 儲蓄目標名稱     |
+| name           | CHAR(50)   | NOT NULL                             | 儲蓄目標名稱     |
 | target_amount  | INTEGER  | NOT NULL, CHECK (target_amount > 0)     | 目標金額         |
 | current_amount | INTEGER  | DEFAULT 0, CHECK (current_amount >= 0)  | 目前已儲蓄金額   |
 | start_date     | DATE     | NOT NULL                                | 儲蓄開始日期     |
@@ -339,7 +339,7 @@ INSERT INTO budgets (user_id, category_id, year, month, budget_limit) VALUES
 CREATE TABLE saving_goals (
     goal_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    name VARCHAR(50) NOT NULL,
+    name CHAR(50) NOT NULL,
     target_amount INT NOT NULL CHECK (target_amount > 0),
     current_amount INT DEFAULT 0 CHECK (current_amount >= 0),
     start_date DATE NOT NULL,
