@@ -445,7 +445,7 @@ CREATE TABLE blacklist (
 | debt_name        |CHAR(50)  | NOT NULL                                             | 回報類型         |
 | debt_amount      | INTEGER | NOT NULL                                              | 負債金額         |
 | remaining_amount | INTEGER |NOT NULL                                               | 剩餘債務         |
-| interest_rate     | DEFAULT(15,2) |  DEFAULT 0                                     |利率              |
+| interest_rate     | DECIMAL(15,2) |  DEFAULT 0                                     |利率              |
 | start_date     | TIMESTAMP | NOT NULL                                               | 債務開始時間     |
 | due_date     | TIMESTAMP | NOT NULL                                                 | 預計還清時間     |
 | status     | CHAR(8) | DEFAULT 'Active',CHECK('Active','Paid off')                  | 債務還款狀況     |
