@@ -1,5 +1,10 @@
 # 題目：記帳管理系統
 此專題利用Amazon RDS建立一個雲端資料庫，可以供不同使用者註冊帳號享有自己的雲端記帳系統，可以記錄自己的總資產並會隨著新增的收入支出去改變資產數，也可以對自己的交易去新增不同的類別，像是飲食、交通、公司開銷、旅遊等可以依照使用者需求去自訂。紀錄交易時系統會依照使用者選擇的是收入或支出去做不同的行為，例如這筆交易是收入，就將此交易的金額加入總資產，讓總資產可以隨著交易的紀錄靈活變動。用戶還能建立自己每個月的預算金額是多少，例如在2025年的1月在飲食上的預算是多少錢，系統也會記錄目前已經花了多少錢。除了上述功能，還能新增儲蓄目標讓使用者自行設定不同目標，像是筆電需要多少錢、從什麼時候開始、何時結束，系統會顯示目前已經儲蓄的金額跟該目標是否已經完成。
+## 報告
+[期末簡報](https://www.canva.com/design/DAGooXezDFk/JuXnvlgG4OU5B8fCzmdRAA/view?utm_content=DAGooXezDFk&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h7660f80551)
+
+[📥 點我下載報告](https://github.com/joshu0601/Database-G04/raw/main/report/資料庫期末報告.docx)
+
 ## 應用情境
 1. 每月薪水規劃:
 使用者每月領薪水後，將薪資輸入系統，設定儲蓄目標與每月各類支出上限，（例如：飲食 $6000，交通 $2000）。
@@ -632,9 +637,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 | [張承翰](./profile/張承翰.md) | 41143230 | 資工三乙 | 資料庫及資料表建置 |
 | [郭建杰](./profile/郭建杰.md) | 41143232 | 資工三乙 | 概念層建置 |
 
-## 簡報
-[📥 點我下載簡報](https://github.com/joshu0601/Database-G04/raw/main/report/資料庫報告_期中.pptx)
 
-## 報告
-[📥 點我下載報告](https://github.com/joshu0601/Database-G04/raw/main/report/資料庫期末報告.docx)
+
 
