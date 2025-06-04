@@ -96,8 +96,7 @@ CREATE TABLE managers (
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     user_account CHAR(255) NOT NULL UNIQUE,
-    user_password CHAR(24) NOT NULL,
-    name VARCHAR(50) NOT NULL,
+    name CHAR(50) NOT NULL,
     total_assets INT DEFAULT 0 CHECK (total_assets >= 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -465,6 +464,7 @@ CREATE TABLE blacklist (
 | 所有人個人資料         | • `users(user_id, user_account, name, total_assets, created_at)`<br>• `transactions(type, amount)`                                   | 可以查看資料庫內所有人的個人資料（含名字、總資產、創建時間、帳號），以及他交易的總支出含總花費，之後也能透過此表查詢出想要的人的個人資料。                      |
 | 所有人所有分類的總收入與總支出 | • `users(user_id, name)`<br>• `categories(category_id, name)`<br>• `transactions(type, amount)`                                      | 可以查看資料庫內所有人每種分類的總收入以及總支出，所以會從資料庫拿每種分類下的收入以及支出做運算，以便之後實現能讓使用者查看個人帳戶下的所有分類的總收支。              |
 | 所有人每月預算查詢VIEW表 | • `users(user_id, name)`<br>• `categories(category_id)`<br>• `budget(year,month,budget_limit,spent_amount)`                                      | 可以查看資料庫內所有人每種分類下的每月預算表，所以會從資料庫拿每種分類的每月預算表作處理，讓使用者可以在首頁查看自己的每月預算表中每個類別當前的花費              |
+| 所有人年度總結查詢 | • `users(user_id, name)`<br>• `categories(category_id)`<br>• `budget(year,month,budget_limit,spent_amount)`                                      | 可以查看資料庫內所有人每種分類下的每月預算表，所以會從資料庫拿每種分類的每月預算表作處理，讓使用者可以在首頁查看自己的每月預算表中每個類別當前的花費              |
 
 ### 所有人儲蓄目標進度VIEW表SQL
 ```sql
@@ -543,6 +543,20 @@ SELECT
 FROM users u
 JOIN categories c ON u.user_id = c.user_id
 JOIN budgets b ON b.user_id = u.user_id AND b.category_id = c.category_id;
+```
+### 所有人年度總結VIEW表SQL
+```sql
+CREATE VIEW annual_financial_summary AS
+SELECT 
+    u.user_id,
+    u.name AS user_name,
+    YEAR(t.transaction_date)AS year,
+    IFNULL(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END),0) AS total_income,
+    IFNULL(SUM(CASE WHEN t.type='Expense' THEN t.amount ELSE 0 END),0) AS total_expense,
+    IFNULL(SUM(CASE WHEN t.type='Income' THEN t.amount ELSE 0 END),0) - IFNULL(SUM(CASE WHEN t.type='Expense' THEN t.amount ELSE 0 END),0) AS total_saving,
+FROM users u
+LEFT JOIN transactions t ON u.user_id = t.user_id
+GROUP BY u.user_id,u.name,YEAR(t.transactions);
 ```
 ## 使用者權限設定
 #### 1. 一般使用者
