@@ -605,6 +605,56 @@ FROM users u
 LEFT JOIN transactions t ON u.user_id = t.user_id
 GROUP BY u.user_id,u.name,YEAR(t.transactions);
 ```
+
+### VIEW設計
+| 名稱              | 選擇的屬性                                                                                                                                | 說明                                                                                         |
+| :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------ |
+| 系統內總用戶數及總交易數 | •`transaction(user_id,transaction_date)`<br>•`users(name,transaction_date)`                                                       | 裡面可以查詢到總共有多少用戶在我們系統以及每位用戶所創建的總交易數|
+| 查看問題回報單     | •`feedback_reports(report_id,user_id,report_type,title,content,created_at)`<br>•`users(name)`                                          | 可以查詢到所有使用者創建的問題回報單以及系統回饋表|
+| 查看黑名單        | •`blacklist(blacklist_id,user_id,reason,blocked_at,blocked_by,)`<br>•`users(name)`<br>•`managers(managersname)`                       | 可以查看有哪些使用者在黑名單內|
+
+### 查看系統內總用戶數及總交易數VIEW表SQL
+```sql
+CREATE VIEW system_overview AS
+SELECT 
+    t.user_id AS user_id,
+    u.name AS user_name,
+    t.transaction_date AS transaction_date,
+    COUNT(*) AS daily_transaction_count
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id
+GROUP BY t.user_id, u.name, t.transaction_date;
+```
+### 查看問題回報單及系統回饋表VIEW表SQL
+```sql
+CREATE VIEW feedback_bug_reports AS
+SELECT 
+    fr.report_id AS report_id,
+    fr.user_id AS user_id,
+    u.name AS user_name,
+    fr.report_type AS report_type,
+    fr.title AS title,
+    fr.content AS content,
+    fr.created_at AS created_at
+FROM feedback_reports fr
+JOIN users u ON fr.user_id = u.user_id;
+```
+### 查看黑名單VIEW表SQL
+```sql
+CREATE VIEW blacklist_monitor AS
+SELECT 
+    b.blacklist_id AS blacklist_id,
+    b.user_id AS user_id,
+    u.name AS user_name,
+    b.reason AS reason,
+    b.blocked_at AS blocked_at,
+    b.blocked_by AS blocked_by,
+    m.managersname AS manager_name
+FROM blacklist b
+JOIN users u ON b.user_id = u.user_id
+JOIN managers m ON b.blocked_by = m.manager_id;
+```
+
 ## 使用者權限設定
 #### 1. 一般使用者
 | 資料表 | 權限 | 說明 |
