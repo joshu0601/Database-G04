@@ -386,6 +386,9 @@ CREATE TABLE blacklist (
 | transactions    | transaction_id |           每一筆支出紀錄都有唯一的編號               |
 | budgets     | budget_id  |     每一筆月預算表都有唯一的編號                             |
 | saving_goals| goal_id    |   每一個儲蓄目標都有唯一的編號                               |
+| blacklist | blacklist_id    |   每一個黑名單的都有唯一的編號                               |
+| feedback_reports | reports_id    |   每一個回報單的都有唯一的編號                               |
+|  managers |  managers_id    |   每一個管理員的都有唯一的編號                               |
 
 |    子資料表(Child Table)    |     外鍵(Foreign Key)     |  參照主資料表(Parent Table)  |                    說明                     |
 |--------------|------------------|----------------|---------------------------------------------|
@@ -395,6 +398,8 @@ CREATE TABLE blacklist (
 | budgets      | user_id          | users          | 每個每月預算表會關聯一位已經註冊的使用者     |
 | budgets      | category_id      | categories     | 每個每月預算表會屬於一個已經建立的類別       |
 | saving_goals | user_id          | users          | 每個儲蓄目標表會關聯到一個已經註冊的使用者    |
+| blacklist | user_account          | users          | 每個黑名單都有一個被封鎖的使用者帳號    |
+| blocked_by| managers_id         | managers          | 每個黑名單都有處理該事件的管理員    |
 ---
 
 ### VIEW設計
@@ -404,6 +409,7 @@ CREATE TABLE blacklist (
 | 所有人交易紀錄         | • `transactions(transaction_id, type, amount, transaction_date, description, created_at)`<br>• `categories(name)`<br>• `users(name)` | 可以查看資料庫內所有人的名字、每筆交易紀錄（含交易日期、金額、類別），之後也能透過此表查詢出想要的人的所有交易紀錄。                                 |
 | 所有人個人資料         | • `users(user_id, user_account, name, total_assets, created_at)`<br>• `transactions(type, amount)`                                   | 可以查看資料庫內所有人的個人資料（含名字、總資產、創建時間、帳號），以及他交易的總支出含總花費，之後也能透過此表查詢出想要的人的個人資料。                      |
 | 所有人所有分類的總收入與總支出 | • `users(user_id, name)`<br>• `categories(category_id, name)`<br>• `transactions(type, amount)`                                      | 可以查看資料庫內所有人每種分類的總收入以及總支出，所以會從資料庫拿每種分類下的收入以及支出做運算，以便之後實現能讓使用者查看個人帳戶下的所有分類的總收支。              |
+| 所有人每月預算查詢VIEW表 | • `users(user_id, name)`<br>• `categories(category_id)`<br>• `budget(year,month,budget_limit,spent_amount)`                                      | 可以查看資料庫內所有人每種分類下的每月預算表，所以會從資料庫拿每種分類的每月預算表作處理，讓使用者可以在首頁查看自己的每月預算表中每個類別當前的花費              |
 
 ### 所有人儲蓄目標進度VIEW表SQL
 ```sql
@@ -466,7 +472,23 @@ JOIN categories c ON u.user_id = c.user_id
 LEFT JOIN transactions t ON t.user_id = u.user_id AND t.category_id = c.category_id
 GROUP BY u.user_id, u.name, c.category_id, c.name;
 ```
-
+### 所有人每月預算查詢VIEW表SQL
+```sql
+CREATE VIEW monthly_budget_summary AS
+SELECT 
+  u.user_id,
+  u.name AS user_name,
+  c.category_id,
+  c.name AS category_name,
+  b.year,
+  b.month,
+  b.budget_limit,
+  b.spent_amount,
+  (b.budget_limit - b.spent_amount) AS remaining_budget
+FROM users u
+JOIN categories c ON u.user_id = c.user_id
+JOIN budgets b ON b.user_id = u.user_id AND b.category_id = c.category_id;
+```
 ## 使用者權限設定
 #### 1. 一般使用者
 | 資料表 | 權限 | 說明 |
@@ -528,7 +550,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 
 ## ER Diagram(改)
 
-![ER 圖](image/0601ER.png)
+![ER 圖](image/NEWER圖.png)
 
 
 ## 🏆 團隊成員
