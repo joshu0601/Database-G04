@@ -1,4 +1,4 @@
-# 題目：記帳管理系統
+## 題目：記帳管理系統
 此專題利用Amazon RDS建立一個雲端資料庫，可以供不同使用者註冊帳號享有自己的雲端記帳系統，可以記錄自己的總資產並會隨著新增的收入支出去改變資產數，也可以對自己的交易去新增不同的類別，像是飲食、交通、公司開銷、旅遊等可以依照使用者需求去自訂。紀錄交易時系統會依照使用者選擇的是收入或支出去做不同的行為，例如這筆交易是收入，就將此交易的金額加入總資產，讓總資產可以隨著交易的紀錄靈活變動。用戶還能建立自己每個月的預算金額是多少，例如在2025年的1月在飲食上的預算是多少錢，系統也會記錄目前已經花了多少錢。除了上述功能，還能新增儲蓄目標讓使用者自行設定不同目標，像是筆電需要多少錢、從什麼時候開始、何時結束，系統會顯示目前已經儲蓄的金額跟該目標是否已經完成。
 ## 報告
 [期末簡報](https://www.canva.com/design/DAGooXezDFk/JuXnvlgG4OU5B8fCzmdRAA/view?utm_content=DAGooXezDFk&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h7660f80551)
@@ -219,7 +219,8 @@ VALUES
 | type            | CHAR(7) |  NOT NULL CHECK(type='Income' OR type='Expense')                     | 收入支出分類      |
 | amount          |   INT   |               NOT NULL CHECK (amount >= 0)                           | 金額       |
 | frequency       |CHAR(10) |NOT NULL CHECK (frequency IN ('Daily', 'Weekly', 'Monthly', 'Yearly'))| 週期       |
-| day_of_frequency|   INT   |CHECK (day_of_frequency BETWEEN 1 AND 31)                             | 每月的幾號       |
+| frequency_day   |   INT   |CHECK(frequency_day BETWEEN 1 AND 31)                                 | 幾號、星期幾|
+| frequency_month |   INT   |CHECK(frequency_month BETWEEN 1 AND 12 OR frequency_month IS NULL)    | 月份  |
 | start_date      |   DATE  |     NOT NULL                                                         | 開始日期  |
 | end_date        |   DATE  |                                                                      | 結束日期  |
 | description     |CHAR(255)|                                                                      | 描述  |
@@ -236,7 +237,8 @@ VALUES
 | type            |只能是'Income'、'Expense'兩種英文單字，不能有其他文字、數字、特殊符號|
 | amount          |金額由0~9數字組成，不能含有文字、特殊符號|
 | frequency       |只能是'Daily'、'Weekly'、'Monthly'、'Yearly'的英文單字，除了這四種不能有其他內容|
-| day_of_frequency|只能由數字組成，範圍是1~31的整數，不能含有文字、特殊符號|
+| frequency_day   |只能由數字組成，範圍是1~31的整數，不能含有文字、特殊符號|
+| frequency_month |只能由數字組成，範圍是1~12的整數，不能含有文字、特殊符號|
 | start_date      |格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。|
 | end_date        | 格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。 |
 | description     |可以由文字組成，不能含有數字、特殊符號|
