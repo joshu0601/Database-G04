@@ -254,7 +254,8 @@ CREATE TABLE recurring_transactions (
     type CHAR(7) NOT NULL CHECK (type IN ('Income', 'Expense')),
     amount INT NOT NULL CHECK (amount >= 0),
     frequency CHAR(10) NOT NULL CHECK (frequency IN ('Daily', 'Weekly', 'Monthly', 'Yearly')),
-    day_of_frequency INT CHECK (day_of_frequency BETWEEN 1 AND 31),
+    frequency_day INT CHECK(frequency_day BETWEEN 1 AND 31),
+    frequency_month INT CHECK(frequency_month BETWEEN 1 AND 12 OR frequency_month IS NULL),
     start_date DATE NOT NULL,
     end_date DATE,
     description CHAR(255),
@@ -268,27 +269,19 @@ CREATE TABLE recurring_transactions (
 ```sql
 INSERT INTO transactions (user_id, type, amount, category_id, transaction_date, description)
 VALUES
-(1, 'Income', 35000, 2, '2025-05-01', '五月薪資'), -- 小宋的月薪
-(1, 'Expense', 180, 1, '2025-05-02', '便當 #午餐'), -- 小宋的支出
-(2, 'Income', 8000, 4, '2025-05-01', '兼職收入'), -- 老高的收入
-(2, 'Expense', 120, 3, '2025-05-02', '滷味宵夜 #朋友聚餐'), -- 老高的支出
-(3, 'Income', 28000, 6, '2025-05-01', '五月薪資'), -- 小郭的收入
-(3, 'Expense', 1500, 5, '2025-05-05', '雲林高鐵票'), -- 小郭的支出
-(4, 'Income', 60000, 8, '2025-05-01', '月薪 #公司'), -- 張三的收入
-(4, 'Expense', 3200, 7, '2025-05-01', '部門聚餐'), -- 張三的支出
 ```
 ---
 
 ### 📋 budgets 每月預算表
 
-| 欄位名稱     | 資料型別 | 限制條件                                            | 說明             |
+| 欄位名稱     | 資料型別 | 限制條件                                            | 說明               |
 |--------------|----------|-----------------------------------------------------|------------------|
-| budget_id    | INTEGER  | PRIMARY KEY                                         | 預算 ID         |
+| budget_id    | INTEGER  | PRIMARY KEY                                         | 預算 ID          |
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)                        | 使用者 ID        |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)               | 分類 ID          |
 | year         | INTEGER  | NOT NULL                                            | 年份             |
 | month        | INTEGER  | NOT NULL, CHECK (month BETWEEN 1 AND 12)            | 月份             |
-| budget_limit | INTEGER  | NOT NULL, CHECK (budget_limit >= 0)                 | 分類預算金額     |
+| budget_limit | INTEGER  | NOT NULL, CHECK (budget_limit >= 0)                 | 分類預算金額      |
 | spent_amount | INTEGER  | DEFAULT 0 CHECK (spent_amount >= 0)                 | 已花費預算       |
 
 ### 📋 budgets 完整性限制
