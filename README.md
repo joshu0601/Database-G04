@@ -209,45 +209,60 @@ VALUES
 
 ---
 
-### 📋 Monthly_amount 每月收支表
+### 📋 recurring_transactions 定期交易表
 
-| 欄位名稱     | 資料型別 | 限制條件                                  | 說明           |
-|--------------|----------|-------------------------------------------|----------------|
-| Monthly_id   | INTEGER   | PRIMARY KEY                   | 收支 ID|
-| user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID |
-| category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID     |
-| type         | CHAR(7)  |  NOT NULL CHECK(type='Income'ORtype='Expense')| 收入支出分類    |
-| amount       |INT|               NOT NULL CHECK (amount >= 0)        | 金額       |
-| description   | CHAR(255)|                                      | 此項收支說明  |
-| created_at   | TIMESTAMP|        DEFAULT CURRENT_TIMESTAMP         | 創建時間  |
+| 欄位名稱         | 資料型別 | 限制條件                                                             | 說明           |
+|-----------------|----------|---------------------------------------------------------------------|----------------|
+| recurring_id    | INTEGER | PRIMARY KEY                                                          | 定期 ID|
+| user_id         | INTEGER | FOREIGN KEY → users(user_id)                                         | 使用者 ID |
+| category_id     | INTEGER | FOREIGN KEY → categories(category_id)                                | 分類 ID     |
+| type            | CHAR(7) |  NOT NULL CHECK(type='Income' OR type='Expense')                     | 收入支出分類      |
+| amount          |   INT   |               NOT NULL CHECK (amount >= 0)                           | 金額       |
+| frequency       |CHAR(10) |NOT NULL CHECK (frequency IN ('Daily', 'Weekly', 'Monthly', 'Yearly'))| 週期       |
+| day_of_frequency|   INT   |CHECK (day_of_frequency BETWEEN 1 AND 31)                             | 每月的幾號       |
+| start_date      |   DATE  |     NOT NULL                                                         | 開始日期  |
+| end_date        |   DATE  |                                                                      | 結束日期  |
+| description     |CHAR(255)|                                                                      | 描述  |
+| status          | CHAR(10)| DEFAULT 'Active' CHECK (status IN ('Active', 'Paused', 'Completed')) | 是否持續收扣款  |
+| created_at      |TIMESTAMP|        DEFAULT CURRENT_TIMESTAMP                                     | 創建時間  |
 
-### 📋 Monthly_amount 完整性限制
+### 📋 recurring_transactions 完整性限制
 
 | 欄位名稱     | 完整性限制                                                              |
 |--------------|----------------------------------------------------------------------|
-| Monthly_id | 系統會根據每一筆交易建立的順序去給該交易訂單一個編號，該編號是一個整數，從1開始的，每有一筆新訂單就+1|
-| user_id      |由整數組成，不包含特殊符號、文字|
-| category_id  |由整數組成，不包含特殊符號、文字|
-| type         |只能是Income或Expense兩種英文單字，不能含有數字、特殊符號、除這兩個英文單字外的英文字母|
-|amount        |金額只能由0到9的數字去組成，不能為負數必須大於等於0，也不能包含文字、特殊符號|
-| description   |說明可以由中文字、英文字Aa到Zz、數字0到9組成，但不能包含特殊符號，長度最多為255|
-| created_at   |系統會根據該交易建立當下紀錄時間，時間格式為yyyy年mm月dd日|
+| recurring_id    |由系統編號從0開始只要多了一筆定期交易單就會+1|
+| user_id         |由整數0~9組成、系統編號，從0開始每多一個使用者就會+1|
+| category_id     |由整數0~9組成、系統編號，從0開始每多一個分類就會+1 |
+| type            |只能是'Income'、'Expense'兩種英文單字，不能有其他文字、數字、特殊符號|
+| amount          |金額由0~9數字組成，不能含有文字、特殊符號|
+| frequency       |只能是'Daily'、'Weekly'、'Monthly'、'Yearly'的英文單字，除了這四種不能有其他內容|
+| day_of_frequency|只能由數字組成，範圍是1~31的整數，不能含有文字、特殊符號|
+| start_date      |格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。|
+| end_date        | 格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。 |
+| description     |可以由文字組成，不能含有數字、特殊符號|
+| status          |只能是'Active'、'Paused'、'Completed'三種英文單字，不能有除這三種以外的文字與特殊符號|
+| created_at      | 系統會根據該交易建立當下紀錄時間，時間格式為yyyy年mm月dd日|
 
-### 📋 Monthly_amount 交易紀錄表SQL
+### 📋 recurring_transactions 交易紀錄表SQL
 ```sql
-CREATE TABLE Monthly_amount (
-    Monthly_amount_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    type CHAR(10) NOT NULL CHECK (type = 'Income' OR type = 'Expense'),
+CREATE TABLE recurring_transactions (
+    recurring_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    category_id INT NOT NULL,
+    type CHAR(7) NOT NULL CHECK (type IN ('Income', 'Expense')),
     amount INT NOT NULL CHECK (amount >= 0),
-    category_id INT,
+    frequency CHAR(10) NOT NULL CHECK (frequency IN ('Daily', 'Weekly', 'Monthly', 'Yearly')),
+    day_of_frequency INT CHECK (day_of_frequency BETWEEN 1 AND 31),
+    start_date DATE NOT NULL,
+    end_date DATE,
     description CHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status CHAR(10) DEFAULT 'Active' CHECK (status IN ('Active', 'Paused', 'Completed')),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 ```
-### 📋 Monthly_amount 每月收支表SQL範例
+### 📋 recurring_transactions 每月收支表SQL範例
 ```sql
 INSERT INTO transactions (user_id, type, amount, category_id, transaction_date, description)
 VALUES
