@@ -380,7 +380,7 @@ INSERT INTO saving_goals (user_id, name, target_amount, start_date, end_date) VA
 | user_id        | INTEGER   | FOREIGN KEY → users(user_id)                           | 使用者 ID        |
 | report_type    | CHAR(10)  | NOT NULL,  CHECK (reprot_type IN ('Bug', 'Suggestion'))| 回報類型         |
 | title          | CHAR(100) | NOT NULL                                               | 標題             |
-| content        | CHAR(200) |NOT NULL                                                 | 內容           |
+| content        | CHAR(200) |NOT NULL                                                | 內容           |
 | created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                              | 回報時間         |
 
 ### 📋 feedback_reports 使用者問題回報與建議表
@@ -524,6 +524,40 @@ CREATE TABLE notifications (
     status CHAR(10) DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read')),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+```
+---
+
+### 📋 assets 資產紀錄表
+
+| 欄位名稱     | 資料型別 | 限制條件                                                                   | 說明      |
+|-------------|----------|---------------------------------------------------------------------------|-----------|
+| asset_id    |INTEGER   | PRIMARY KEY                                                               | 資產 ID    |
+| user_id     |INTEGER   | FOREIGN KEY → users(user_id)                                              | 使用者 ID  |
+| asset_type  |CHAR(20)  | NOT NULL CHECK(asset_type IN ('Bank', 'Investment', 'Property', 'Other')) | 通知類型   |
+| balance     | INTEGER  | NOT NULL CHECK(balance >= 0)                                              | 通知訊息   |
+| created_at  | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                                  | 發送時間   | 
+
+### 📋 assets 完整性限制
+
+| 欄位名稱    | 完整性限制                                                             |
+|-------------|----------------------------------------------------------------------|
+| asset_id    | 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。 |
+| user_id     |根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
+| asset_type  |只能是'Bank'、'Investment'、'Property'、'Other'這四種英文單字，不能含有其他文字跟數字和特殊符號。 |
+| balance     |由數字0-9組成且不能是負數|
+| created_at  |使用者建立資產表時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss | 
+
+### 📋  assets 資產紀錄表 SQL
+```sql
+CREATE TABLE assets (
+      asset_id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      asset_name CHAR(50) NOT NULL CHECK(asset_name REGEXP '^[a-zA-Z\u4e00-\u9fa5]+$'),
+      asset_type CHAR(20) CHECK(asset_type IN ('Bank', 'Investment', 'Property', 'Other')),
+      balance DECIMAL(10,2) NOT NULL CHECK(balance >= 0),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(user_id)
+  );
 ```
 
 
