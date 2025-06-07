@@ -598,6 +598,13 @@ CREATE TABLE bills (
   );
 ```
 ---
+
+
+
+
+
+
+---
 ### 主鍵外鍵
 | 資料表(Table)      |     主鍵(Primary Key)    |                  說明                 |
 |-------------|------------|-----------------------------------------------------------|
@@ -725,6 +732,69 @@ FROM users u
 LEFT JOIN transactions t ON u.user_id = t.user_id
 GROUP BY u.user_id,u.name,YEAR(t.transactions);
 ```
+---
+### 月報表VIEW表SQL
+```sql
+CREATE VIEW monthly_report_summary AS
+SELECT 
+    t.user_id,
+    u.name AS user_name,
+    YEAR(t.transaction_date) AS year,
+    MONTH(t.transaction_date) AS month,
+    COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END), 0) AS total_income,
+    COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) AS total_expense,
+    c.category_id,
+    c.name AS category_name,
+    COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) AS category_expense,
+    ROUND(
+        COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) /
+        NULLIF(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) OVER (PARTITION BY t.user_id, YEAR(t.transaction_date), MONTH(t.transaction_date)), 0) * 100,
+        2
+    ) AS expense_percentage
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id
+JOIN categories c ON t.category_id = c.category_id
+GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date), c.category_id, c.name
+HAVING category_expense > 0;
+```
+---
+### 帳單狀態VIEW表SQL
+```sql
+CREATE VIEW bill_status_summary AS
+SELECT 
+    b.user_id,
+    u.name AS user_name,
+    b.bill_id,
+    b.bill_name,
+    b.amount,
+    b.due_date,
+    b.status,
+    CASE 
+        WHEN b.status = 'Pending' AND b.due_date < CURDATE() THEN '逾期'
+        WHEN b.status = 'Pending' AND b.due_date <= CURDATE() + INTERVAL 3 DAY THEN '即將到期'
+        ELSE b.status
+    END AS bill_status,
+    COALESCE(SUM(b.amount) OVER (PARTITION BY b.user_id, YEAR(b.due_date), MONTH(b.due_date)), 0) AS monthly_bill_total
+FROM bills b
+JOIN users u ON b.user_id = u.user_id
+WHERE b.due_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH);
+```
+---
+### 資產與債務狀態VIEW表SQL
+```sql
+CREATE VIEW net_worth_summary AS
+SELECT 
+    u.user_id,
+    u.name AS user_name,
+    u.total_assets,
+    COALESCE(SUM(a.balance), 0) AS total_asset_balance,
+    COALESCE(SUM(d.remaining_amount), 0) AS total_debt,
+    COALESCE(SUM(a.balance), 0) - COALESCE(SUM(d.remaining_amount), 0) AS net_worth
+FROM users u
+LEFT JOIN assets a ON u.user_id = a.user_id
+LEFT JOIN debts d ON u.user_id = d.user_id
+GROUP BY u.user_id, u.name, u.total_assets;
+---
 
 #### b.管理員
 | 名稱              | 選擇的屬性                                                                                                                                | 說明                                                                                         |
