@@ -794,6 +794,7 @@ FROM users u
 LEFT JOIN assets a ON u.user_id = a.user_id
 LEFT JOIN debts d ON u.user_id = d.user_id
 GROUP BY u.user_id, u.name, u.total_assets;
+```
 ---
 
 #### b.管理員
