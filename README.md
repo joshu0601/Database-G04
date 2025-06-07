@@ -87,21 +87,25 @@ G04
 | blacklist                | blocked_by      | managers       | 每個黑名單都有處理該事件的管理員    |
 | recurring_transactions   | user_id         | users          | 每個定期交易都關聯到一位已經註冊的使用者建立    |
 | recurring_transactions   | category_id     | categories     | 每個定期交易都屬於一個已經建立的類別    |
-| feedback_reports         | user_id         | users          | 每個回饋單都是關連到一位已經註冊的使用者    |
-| debt                     | user_id         | users          | 每個債務錶都是關連到一位已經註冊的使用者    |
-| notifications            |  user_id        | users          | 每則通知都是關連到一位已經註冊的使用者    |
-|  assets                  | user_id         | users          | 每個資產錶都是關連到一位已經註冊的使用者    |
-|  bills                   | user_id         | users          | 每個帳單都是關連到一位已經註冊的使用者    |
-|  invoices                | user_id         | users          | 每張發票都是關連到一位已經註冊的使用者    |
-|  invoices                | transactions    | transactions_id| 每張發票都可以關連到一筆已經建立的交易    |
+| feedback_reports         | user_id         | users          | 每個回饋單都是關聯到一位已經註冊的使用者    |
+| debt                     | user_id         | users          | 每個債務錶都是關聯到一位已經註冊的使用者    |
+| notifications            |  user_id        | users          | 每則通知都是關聯到一位已經註冊的使用者    |
+|  assets                  | user_id         | users          | 每個資產錶都是關聯到一位已經註冊的使用者    |
+|  bills                   | user_id         | users          | 每個帳單都是關聯到一位已經註冊的使用者    |
+|  invoices                | user_id         | users          | 每張發票都是關聯到一位已經註冊的使用者    |
+|  invoices                | transactions    | transactions_id| 每張發票都可以關聯到一筆已經建立的交易    |
+---
+## ER Diagram(改)
+
+![ER 圖](image/NEWER圖.png)
 ---
 ### 📋 managers 管理員資料表
 
 | 欄位名稱          | 資料型別  | 限制條件                       | 說明       |
 |------------------|-----------|-------------------------------|------------|
-| manager_id      | INTEGER   | PRIMARY KEY                     | 管理員 ID  |
-| managers_account | CHAR(255) | UNIQUE,NOT NULL            | 管理員帳號 |
-| managersname     | CHAR(50)  | NOT NULL                   | 姓名       |
+| manager_id      | INTEGER   | PRIMARY KEY                    | 管理員 ID  |
+| managers_account | CHAR(255) | UNIQUE,NOT NULL               | 管理員帳號 |
+| managersname     | CHAR(50)  | NOT NULL                      | 姓名       |
 | created_at       | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP     | 建立時間   |
 
 密碼存在另外的資料庫。
@@ -834,27 +838,44 @@ LEFT JOIN transactions t ON u.user_id = t.user_id
 GROUP BY u.user_id,u.name,YEAR(t.transactions);
 ```
 ---
-### 月報表VIEW表SQL
+### 月總收支報表VIEW表SQL
 ```sql
-    CREATE VIEW monthly_report_summary AS
-  SELECT 
-      t.user_id,
-      u.name AS user_name,
-      YEAR(t.transaction_date) AS year,
-      MONTH(t.transaction_date) AS month,
-      SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END) AS total_income,
-      SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) AS total_expense,
-      c.category_id,
-      c.name AS category_name,
-      SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) AS category_expense,
-      (SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) * 100) / 
-      SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) AS expense_percentage
-  FROM transactions t
-  JOIN users u ON t.user_id = u.user_id
-  JOIN categories c ON t.category_id = c.category_id
-  GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date), c.category_id, c.name
-  HAVING category_expense > 0;
+CREATE VIEW monthly_report_summary AS
+SELECT 
+    t.user_id,
+    u.name AS user_name,
+    YEAR(t.transaction_date) AS year,
+    MONTH(t.transaction_date) AS month,
+    SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END) AS total_income,
+    SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) AS total_expense,
+    c.category_id,
+    c.name AS category_name,
+    SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) AS category_expense,
+    (SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) * 100.0) / 
+    (SELECT SUM(amount) FROM transactions t2 WHERE t2.user_id = t.user_id 
+     AND t2.type = 'Expense' 
+     AND YEAR(t2.transaction_date) = YEAR(t.transaction_date) 
+     AND MONTH(t2.transaction_date) = MONTH(t.transaction_date)) AS expense_percentage
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id
+JOIN categories c ON t.category_id = c.category_id
+GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date), c.category_id, c.name
+HAVING category_expense > 0;
 ```
+---
+
+### 月支出VIEW表SQL
+```sql
+CREATE VIEW expense_trend AS
+SELECT t.user_id, u.name AS user_name, YEAR(t.transaction_date) AS year, 
+       MONTH(t.transaction_date) AS month, SUM(t.amount) AS total_expense
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id
+WHERE t.type = 'Expense'
+GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date);
+```
+
+
 ---
 ### 帳單狀態VIEW表SQL
 ```sql
@@ -1005,9 +1026,7 @@ CREATE USER 'backup'@'%' IDENTIFIED BY '4321';
 GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 ```
 
-## ER Diagram(改)
 
-![ER 圖](image/NEWER圖.png)
 
 
 
