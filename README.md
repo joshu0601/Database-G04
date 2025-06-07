@@ -497,7 +497,7 @@ CREATE TABLE debts (
 |----------------|----------|-----------------------------------------------------------------------|-----------|
 | notification_id|INTEGER   | PRIMARY KEY                                                           | 通知 ID    |
 | user_id        |INTEGER   | FOREIGN KEY → users(user_id)                                          | 使用者 ID  |
-| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt'))  | 通知類型   |
+| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt',bills))  | 通知類型   |
 | message        | CHAR(255) | NOT NULL                                                             | 通知訊息   |
 | sent_at        | TIMESTAMP |DEFAULT CURRENT_TIMESTAMP                                             | 發送時間   | 
 | status         | TIMESTAMP | DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read'))                 | 通知狀態   |
@@ -508,7 +508,7 @@ CREATE TABLE debts (
 |----------------|----------------------------------------------------------------------|
 | notification_id| 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
 | user_id        | 根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
-| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'這四種英文字，不能有其他文字或數字和特殊符號|
+| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'、bills這五種英文字，不能有其他文字或數字和特殊符號|
 | message        | 由英文、中文、數字組成，不能含有特殊符號|
 | sent_at        | 系統通知使用者的時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss | 
 | status         | 使用者是否已經看過此則通知，只能是'Unread'、'Read'這兩種英文單字，不能含有其他文字或數字和特殊符號|
@@ -559,8 +559,44 @@ CREATE TABLE assets (
       FOREIGN KEY (user_id) REFERENCES users(user_id)
   );
 ```
+---
+### 📋 bills 帳單紀錄表
 
+| 欄位名稱   | 資料型別 | 限制條件                                                                   | 說明      |
+|-----------|----------|---------------------------------------------------------------------------|-----------|
+| bill_id   |INTEGER   | PRIMARY KEY                                                               | 帳單 ID    |
+| user_id   |INTEGER   | FOREIGN KEY → users(user_id)                                              | 使用者 ID  |
+| bill_name |CHAR(50)  | NOT NULL CHECK(bill_name REGEXP '^[a-zA-Z\u4e00-\u9fa5]+$')               | 帳單名稱   |
+| amount    | INTEGER  | NOT NULL CHECK(amount >= 0)                                               | 帳單金額   |
+| due_date  | TIMESTAMP|NOT NULL                                                                   | 到期日   | 
+| status    | TIMESTAMP|DEFAULT 'Pending' CHECK(status IN ('Pending', 'Paid', 'Overdue'))          | 付款狀態  | 
+| created_at| TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                                  | 建立時間   | 
 
+### 📋 bills 完整性限制
+
+| 欄位名稱   | 完整性限制                                                             |
+|-----------|----------------------------------------------------------------------|
+| bill_id   | 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
+| user_id   |根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
+| bill_name |帳單名稱不能含有數字、特殊符號，只能由英文、中文組成|
+| amount    |由數字0-9組成，不能含有其他文字與特殊符號且不能是負數|
+| due_date  |格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。| 
+| status    |只能是'Pending'、'Paid'、'Overdue'三種英文單字，不能含有其他文字或數字和特殊符號| 
+| created_at|使用者建立帳單時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss | 
+
+### 📋  bills 帳單紀錄表 SQL
+```sql
+CREATE TABLE bills (
+      bill_id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      bill_name CHAR(50) NOT NULL CHECK(bill_name REGEXP '^[a-zA-Z\u4e00-\u9fa5]+$'),
+      amount DECIMAL(10,2) NOT NULL CHECK(amount >= 0),
+      due_date DATE NOT NULL,
+      status CHAR(10) DEFAULT 'Pending' CHECK(status IN ('Pending', 'Paid', 'Overdue')),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(user_id)
+  );
+```
 ---
 ### 主鍵外鍵
 | 資料表(Table)      |     主鍵(Primary Key)    |                  說明                 |
