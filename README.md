@@ -75,18 +75,25 @@ G04
 | invoices               | invoice_id      | 每張發票都有一個唯一的編號|
 ---
 ### 資料表外鍵
-|    子資料表(Child Table)    |     外鍵(Foreign Key)     |  參照主資料表(Parent Table)  |                    說明                     |
-|--------------|------------------|----------------|---------------------------------------------|
-| categories   | user_id          | users          | 每一個類別都是關聯到一位已經註冊的使用者     |
-| transactions     | user_id          | users          | 每一筆交易紀錄都是關聯到一位已經註冊的使用者 |
-| transactions     | category_id      | categories     | 每一筆交易紀錄表會屬於一個已經建立的類別     |
-| budgets      | user_id          | users          | 每個每月預算表會關聯一位已經註冊的使用者     |
-| budgets      | category_id      | categories     | 每個每月預算表會屬於一個已經建立的類別       |
-| saving_goals | user_id          | users          | 每個儲蓄目標表會關聯到一個已經註冊的使用者    |
-| blacklist    | user_account          | users          | 每個黑名單都有一個被封鎖的使用者帳號    |
-| blocked_by   | managers_id         | managers          | 每個黑名單都有處理該事件的管理員    |
-| blocked_by   | managers_id         | managers          | 每個黑名單都有處理該事件的管理員    |
-
+|    子資料表(Child Table)  |外鍵(Foreign Key)|  參照主資料表(Parent Table)  |                    說明            |
+|--------------------------|-----------------|----------------|---------------------------------------------|
+| categories               | user_id         | users          | 每一個類別都是關聯到一位已經註冊的使用者     |
+| transactions             | user_id         | users          | 每一筆交易紀錄都是關聯到一位已經註冊的使用者 |
+| transactions             | category_id     | categories     | 每一筆交易紀錄表會屬於一個已經建立的類別     |
+| budgets                  | user_id         | users          | 每個每月預算表會關聯一位已經註冊的使用者     |
+| budgets                  | category_id     | categories     | 每個每月預算表會屬於一個已經建立的類別       |
+| saving_goals             | user_id         | users          | 每個儲蓄目標表會關聯到一個已經註冊的使用者    |
+| blacklist                | user_account    | users          | 每個黑名單都有一個被封鎖的使用者帳號    |
+| blacklist                | blocked_by      | managers       | 每個黑名單都有處理該事件的管理員    |
+| recurring_transactions   | user_id         | users          | 每個定期交易都關聯到一位已經註冊的使用者建立    |
+| recurring_transactions   | category_id     | categories     | 每個定期交易都屬於一個已經建立的類別    |
+| feedback_reports         | user_id         | users          | 每個回饋單都是關連到一位已經註冊的使用者    |
+| debt                     | user_id         | users          | 每個債務錶都是關連到一位已經註冊的使用者    |
+| notifications            |  user_id        | users          | 每則通知都是關連到一位已經註冊的使用者    |
+|  assets                  | user_id         | users          | 每個資產錶都是關連到一位已經註冊的使用者    |
+|  bills                   | user_id         | users          | 每個帳單都是關連到一位已經註冊的使用者    |
+|  invoices                | user_id         | users          | 每張發票都是關連到一位已經註冊的使用者    |
+|  invoices                | transactions    | transactions_id| 每張發票都可以關連到一筆已經建立的交易    |
 ---
 ### 📋 managers 管理員資料表
 
@@ -292,7 +299,7 @@ VALUES
 | status          |只能是'Active'、'Paused'、'Completed'三種英文單字，不能有除這三種以外的文字與特殊符號|
 | created_at      | 系統會根據該交易建立當下紀錄時間，時間格式為yyyy年mm月dd日|
 
-### 📋 recurring_transactions 交易紀錄表SQL
+### 📋 recurring_transactions 定期交易表 SQL
 ```sql
 CREATE TABLE recurring_transactions (
     recurring_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -312,7 +319,7 @@ CREATE TABLE recurring_transactions (
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 ```
-### 📋 recurring_transactions 每月收支表SQL範例
+### 📋 recurring_transactions 定期交易表SQL範例
 ```sql
 INSERT INTO transactions (user_id, type, amount, category_id, transaction_date, description)
 VALUES
@@ -461,10 +468,11 @@ CREATE TABLE feedback_reports (
 | 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
 |----------------|----------|---------------------------------------------------------|------------------|
 | blacklist_id   | INTEGER  | PRIMARY KEY                                              | 黑名單 ID        |
-| user_account   | CHAR(255) | FOREIGN KEY → users(user_account)                       |  使用者帳號       |
+| user_account   | CHAR(255)| FOREIGN KEY → users(user_account)                       |  使用者帳號       |
+| blocked_by     | INT      |FOREIGN KEY → managers(manager_id)                        | 哪個管理員封鎖的   |
 | reason         | CHAR(200)| NOT NULL                                                 | 封鎖原因         |
 | blocked_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP	                               | 封鎖時間          |
-| blocked_by     | INT      |FOREIGN KEY → managers(manager_id)                        | 哪個管理員封鎖的   |
+
 
 ### 📋 blacklist 黑名單
 
