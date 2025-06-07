@@ -863,6 +863,25 @@ GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date),
 HAVING category_expense > 0;
 ```
 ---
+---
+### 自訂報表總覽VIEW表SQL
+```sql
+CREATE VIEW custom_report_summary AS
+SELECT 
+    t.user_id,
+    u.name AS user_name,
+    c.category_id,
+    c.name AS category_name,
+    YEAR(t.transaction_date) AS year,
+    MONTH(t.transaction_date) AS month,
+    SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END) AS total_income,
+    SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) AS total_expense
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id
+JOIN categories c ON t.category_id = c.category_id
+GROUP BY t.user_id, u.name, c.category_id, c.name, YEAR(t.transaction_date), MONTH(t.transaction_date);
+```
+---
 
 ### 月支出VIEW表SQL
 ```sql
