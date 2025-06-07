@@ -554,7 +554,7 @@ CREATE TABLE assets (
       user_id INT NOT NULL,
       asset_name CHAR(50) NOT NULL CHECK(asset_name REGEXP '^[a-zA-Z\u4e00-\u9fa5]+$'),
       asset_type CHAR(20) CHECK(asset_type IN ('Bank', 'Investment', 'Property', 'Other')),
-      balance DECIMAL(10,2) NOT NULL CHECK(balance >= 0),
+      balance INT NOT NULL CHECK(balance >= 0),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(user_id)
   );
@@ -590,7 +590,7 @@ CREATE TABLE bills (
       bill_id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
       bill_name CHAR(50) NOT NULL CHECK(bill_name REGEXP '^[a-zA-Z\u4e00-\u9fa5]+$'),
-      amount DECIMAL(10,2) NOT NULL CHECK(amount >= 0),
+      amount INT NOT NULL CHECK(amount >= 0),
       due_date DATE NOT NULL,
       status CHAR(10) DEFAULT 'Pending' CHECK(status IN ('Pending', 'Paid', 'Overdue')),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
