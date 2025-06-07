@@ -643,6 +643,7 @@ CREATE TABLE invoices (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id)
+    CONSTRAINT unique_invoice UNIQUE (user_id, invoice_number, issue_date)
 );
 ```
 
