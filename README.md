@@ -455,7 +455,6 @@ CREATE TABLE blacklist (
 | debt_name        |CHAR(50)  | NOT NULL                                             | 回報類型         |
 | debt_amount      | INTEGER | NOT NULL                                              | 負債金額         |
 | remaining_amount | INTEGER |NOT NULL                                               | 剩餘債務         |
-| interest_rate     | DECIMAL(15,2) |  DEFAULT 0                                     |利率              |
 | start_date     | TIMESTAMP | NOT NULL                                               | 債務開始時間     |
 | due_date     | TIMESTAMP | NOT NULL                                                 | 預計還清時間     |
 | status     | CHAR(8) | DEFAULT 'Active',CHECK('Active','Paid off')                  | 債務還款狀況     |
@@ -470,7 +469,6 @@ CREATE TABLE blacklist (
 | debt_name        |可以由中文、英文組成，不能含有數字、特殊符號。 |
 | debt_amount      | 可以由數字0~9組成，不能含有文字、特殊符號。|
 | remaining_amount | 可以由數字0~9組成，不能含有文字、特殊符號。|
-| interest_rate    |  只能由數字組成，不能含有文字、特殊符號。不能為負數且不得大於50。|
 | start_date     | 格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。 |
 | due_date     |格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。 |
 | status     |只能是'Active','Paid off'兩種英文單字，不能含有其他文字或數字、特殊符號。 |
@@ -478,12 +476,15 @@ CREATE TABLE blacklist (
 
 ### 📋  debt 債務表 SQL
 ```sql
-CREATE TABLE feedback_reports (
+CREATE TABLE debts (
     debt_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    report_type CHAR(10) NOT NULL CHECK (report_type IN ('Bug', 'Suggestion')),
-    title CHAR(100) NOT NULL,
-    content CHAR(200) NOT NULL,
+    user_id INT NOT NULL,
+    debt_name CHAR(50) NOT NULL CHECK(debt_name REGEXP '^[a-zA-Z\u4e00-\u9fa5]+$'),
+    debt_amount INTEGER NOT NULL CHECK(debt_amount >= 0),
+    remaining_amount INTEGER NOT NULL CHECK(remaining_amount >= 0),
+    start_date DATE NOT NULL,
+    due_date DATE NOT NULL,
+    status CHAR(8) DEFAULT 'Active' CHECK(status IN ('Active', 'Paid off')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -492,14 +493,14 @@ CREATE TABLE feedback_reports (
 
 ### 📋 notifications 通知表
 
-| 欄位名稱       | 資料型別 | 限制條件                                                         | 說明      |
-|----------------|----------|----------------------------------------------------------------|-----------|
-| notification_id|INTEGER   | PRIMARY KEY                                                    | 通知 ID    |
-| user_id        |INTEGER   | FOREIGN KEY → users(user_id)                                   | 使用者 ID  |
-| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring'))  | 通知類型   |
-| message        | CHAR(255) | NOT NULL                                                      | 通知訊息   |
-| sent_at        | TIMESTAMP |DEFAULT CURRENT_TIMESTAMP                                      | 發送時間   | 
-| status         | TIMESTAMP | DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read'))          | 通知狀態   |
+| 欄位名稱       | 資料型別 | 限制條件                                                                | 說明      |
+|----------------|----------|-----------------------------------------------------------------------|-----------|
+| notification_id|INTEGER   | PRIMARY KEY                                                           | 通知 ID    |
+| user_id        |INTEGER   | FOREIGN KEY → users(user_id)                                          | 使用者 ID  |
+| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt'))  | 通知類型   |
+| message        | CHAR(255) | NOT NULL                                                             | 通知訊息   |
+| sent_at        | TIMESTAMP |DEFAULT CURRENT_TIMESTAMP                                             | 發送時間   | 
+| status         | TIMESTAMP | DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read'))                 | 通知狀態   |
 
 ### 📋 notifications 完整性限制
 
@@ -507,7 +508,7 @@ CREATE TABLE feedback_reports (
 |----------------|----------------------------------------------------------------------|
 | notification_id| 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
 | user_id        | 根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
-| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'這三種英文字，不能有其他文字或數字和特殊符號|
+| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'這四種英文字，不能有其他文字或數字和特殊符號|
 | message        | 由英文、中文、數字組成，不能含有特殊符號|
 | sent_at        | 系統通知使用者的時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss | 
 | status         | 使用者是否已經看過此則通知，只能是'Unread'、'Read'這兩種英文單字，不能含有其他文字或數字和特殊符號|
