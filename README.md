@@ -735,27 +735,27 @@ GROUP BY u.user_id,u.name,YEAR(t.transactions);
 ---
 ### 月報表VIEW表SQL
 ```sql
-CREATE VIEW monthly_report_summary AS
-SELECT 
-    t.user_id,
-    u.name AS user_name,
-    YEAR(t.transaction_date) AS year,
-    MONTH(t.transaction_date) AS month,
-    COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END), 0) AS total_income,
-    COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) AS total_expense,
-    c.category_id,
-    c.name AS category_name,
-    COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) AS category_expense,
-    ROUND(
-        COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) /
-        NULLIF(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) OVER (PARTITION BY t.user_id, YEAR(t.transaction_date), MONTH(t.transaction_date)), 0) * 100,
-        2
-    ) AS expense_percentage
-FROM transactions t
-JOIN users u ON t.user_id = u.user_id
-JOIN categories c ON t.category_id = c.category_id
-GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date), c.category_id, c.name
-HAVING category_expense > 0;
+    CREATE VIEW monthly_report_summary AS
+    SELECT 
+        t.user_id,
+        u.name AS user_name,
+        YEAR(t.transaction_date) AS year,
+        MONTH(t.transaction_date) AS month,
+        COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END), 0) AS total_income,
+        COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) AS total_expense,
+        c.category_id,
+        c.name AS category_name,
+        COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) AS category_expense,
+        ROUND(
+            COALESCE(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END), 0) /
+            NULLIF(SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) OVER (PARTITION BY t.user_id, YEAR(t.transaction_date), MONTH(t.transaction_date)), 0) * 100,
+            2
+        ) AS expense_percentage
+    FROM transactions t
+    JOIN users u ON t.user_id = u.user_id
+    JOIN categories c ON t.category_id = c.category_id
+    GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date), c.category_id, c.name
+    HAVING category_expense > 0;
 ```
 ---
 ### 帳單狀態VIEW表SQL
