@@ -579,7 +579,7 @@ CREATE TABLE assets (
 | bill_id   | 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
 | user_id   |根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
 | bill_name |帳單名稱不能含有數字、特殊符號，只能由英文、中文組成|
-| amount    |由數字0-9組成，不能含有其他文字與特殊符號且不能是負數|
+| amount    |金額由數字0-9組成，不能含有其他文字與特殊符號且不能是負數|
 | due_date  |格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。| 
 | status    |只能是'Pending'、'Paid'、'Overdue'三種英文單字，不能含有其他文字或數字和特殊符號| 
 | created_at|使用者建立帳單時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss | 
@@ -599,7 +599,52 @@ CREATE TABLE bills (
 ```
 ---
 
+### 📋 invoices 發票紀錄表
 
+| 欄位名稱        | 資料型別 | 限制條件                                                     | 說明      |
+|----------------|----------|-------------------------------------------------------------|-----------|
+| invoice_id     |INTEGER   | PRIMARY KEY                                                 | 帳單 ID    |
+| user_id        |INTEGER   | FOREIGN KEY → users(user_id)                                | 使用者 ID  |
+| transaction_id | INTEGER  | FOREIGN KEY → transactions(transaction_id)                  | 交易ID   | 
+| invoice_number | CHAR(10) | NOT NULL                                                    | 發票號碼   |
+| amount         | INTEGER  | NOT NULL CHECK(amount >= 0)                                 | 發票金額   |
+| issue_date     | DATE     |NOT NULL                                                     | 發票開立日   | 
+| merchant_name  | CHAR(100)|                                                             | 賣方名稱  | 
+| merchant_tax_id| CHAR(8)  |                                                             | 賣方統編   | 
+| status         | CHAR(8)  |DEFAULT 'Pending' CHECK(status IN ('Pending', 'Won', 'Lost'))| 發票狀態   | 
+| created_at     | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                    | 建立時間   | 
+### 📋 invoices 完整性限制
+
+| 欄位名稱        | 完整性限制                                                             |
+|----------------|----------------------------------------------------------------------|
+| invoice_id     |由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
+| user_id        |根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
+| transaction_id |由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。| 
+| invoice_number |發票號碼由數字與英文字組成，固定長度為10，兩個大寫英文字+8碼數字。英文字母範圍是AA-ZZ、數字範圍是00000001-99999999，不能含有特殊符號|
+| amount         |金額由數字0-9組成，不能含有其他文字與特殊符號且不能是負數|
+| issue_date     | 格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。  | 
+| merchant_name  |可以由中文與英文、數字組成，不能含有特殊符號。 | 
+| merchant_tax_id|由整數組成固定長度8碼。| 
+| status         |發票狀態只能是'Pending'、'Won'、'Lost'三種英文單字，不能含有其他文字、數字、特殊符號| 
+| created_at     | 使用者建立發票紀錄時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss| 
+
+### 📋  invoices 發票紀錄表 SQL
+```sql
+CREATE TABLE invoices (
+    invoice_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    invoice_number CHAR(10) NOT NULL,
+    amount INT NOT NULL, 
+    issue_date DATE NOT NULL, 
+    merchant_name CHAR(100),
+    merchant_tax_id CHAR(8), 
+    transaction_id INT, 
+    status CHAR(7) DEFAULT 'Pending' CHECK(status IN ('Pending','Won', 'Lost')) ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id)
+);
+```
 
 
 
