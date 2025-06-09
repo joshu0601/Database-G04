@@ -221,7 +221,7 @@ CREATE TABLE managers (
 ```sql
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_account CHAR(255) NOT NULL UNIQUE,
+    user_account CHAR(255) NOT NULL UNIQUE CHECK (user_account REGEXP '^[a-zA-Z0-9!#$%&''*+-/=?^_`{|}~.]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)+$'),
     name CHAR(50) NOT NULL,
     total_assets INT DEFAULT 0 CHECK (total_assets >= 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
