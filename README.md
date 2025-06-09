@@ -57,6 +57,65 @@
 | 存錢挑戰與目標追蹤 | 小郭，23 歲社會新鮮人     | 設定三個月內存 $15,000 的旅費，系統每週追蹤儲蓄進度，未達標時發出提醒並給予鼓勵。                   |
 | 支出統計與趨勢分析 | 張三，30 歲公司會計師    | 系統自動生成圖表顯示支出比例，幫助他跟老闆報告目前公司的收支情形。                               |
 ---
+## 使用者權限設定
+#### 1. 一般使用者
+| 資料表 | 權限 | 說明 |
+|---------|---------|------|
+| users   | 讀寫自己 |管理帳號|
+|transactions|讀寫自己 |收支紀錄|
+|categories | 讀寫自己 |類別管理|
+|budgets    | 讀寫自己 |預算設定|
+|saving_goals|讀寫自己 |儲蓄目標|
+|VIEW表     | 讀寫自己 |僅供讀四個VIEW表|
+|資料庫結構修改| 無法   |僅管理者可改 schema|
+|資料備份/匯出 | 無法   |
+
+#### SQL語法
+
+```sql
+CREATE USER 'customer'@'%' IDENTIFIED BY '1234';
+GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'customer'@'%';
+```
+
+#### 2. 管理者
+| 資料表 | 權限 | 說明 |
+|-------|----------|--------|
+| users   | 讀寫所有人 |管理帳號|
+|transactions|讀寫所有人 |收支紀錄|
+|categories | 讀寫所有人 |類別管理|
+|budgets    | 讀寫所有人 |預算設定|
+|saving_goals|讀寫所有人 |儲蓄目標|
+|VIEW表     | 讀寫所有人 |僅供讀四個VIEW表|
+|資料庫結構修改| 可以   |僅管理者可改 schema|
+|資料備份/匯出 | 可以   |
+
+#### SQL語法
+
+```sql
+CREATE USER 'manager'@'%' IDENTIFIED BY '5678';
+GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'manager'@'%';
+```
+
+
+#### 3. 備份人員
+| 資料表 | 權限 | 說明 |
+|-------|----------|----------|
+| users   | 只讀所有人 |管理帳號|
+|transactions|只讀所有人 |收支紀錄|
+|categories | 只讀所有人 |類別管理|
+|budgets    | 只讀所有人 |預算設定|
+|saving_goals|只讀所有人 |儲蓄目標|
+|VIEW表     | 只讀所有人 |僅供讀四個VIEW表|
+|資料庫結構修改| 無法   |僅管理者可改 schema|
+|資料備份/匯出 | 可以   |
+
+#### SQL語法
+
+```sql
+CREATE USER 'backup'@'%' IDENTIFIED BY '4321';
+GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
+```
+
 ## 資料表
 ### 資料表主鍵
 | 資料表名稱              | 主鍵             |      說明                     |
@@ -990,64 +1049,6 @@ JOIN users u ON b.user_id = u.user_id
 JOIN managers m ON b.blocked_by = m.manager_id;
 ```
 
-## 使用者權限設定
-#### 1. 一般使用者
-| 資料表 | 權限 | 說明 |
-|---------|---------|------|
-| users   | 讀寫自己 |管理帳號|
-|transactions|讀寫自己 |收支紀錄|
-|categories | 讀寫自己 |類別管理|
-|budgets    | 讀寫自己 |預算設定|
-|saving_goals|讀寫自己 |儲蓄目標|
-|VIEW表     | 讀寫自己 |僅供讀四個VIEW表|
-|資料庫結構修改| 無法   |僅管理者可改 schema|
-|資料備份/匯出 | 無法   |
-
-#### SQL語法
-
-```sql
-CREATE USER 'customer'@'%' IDENTIFIED BY '1234';
-GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'customer'@'%';
-```
-
-#### 2. 管理者
-| 資料表 | 權限 | 說明 |
-|-------|----------|--------|
-| users   | 讀寫所有人 |管理帳號|
-|transactions|讀寫所有人 |收支紀錄|
-|categories | 讀寫所有人 |類別管理|
-|budgets    | 讀寫所有人 |預算設定|
-|saving_goals|讀寫所有人 |儲蓄目標|
-|VIEW表     | 讀寫所有人 |僅供讀四個VIEW表|
-|資料庫結構修改| 可以   |僅管理者可改 schema|
-|資料備份/匯出 | 可以   |
-
-#### SQL語法
-
-```sql
-CREATE USER 'manager'@'%' IDENTIFIED BY '5678';
-GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'manager'@'%';
-```
-
-
-#### 3. 備份人員
-| 資料表 | 權限 | 說明 |
-|-------|----------|----------|
-| users   | 只讀所有人 |管理帳號|
-|transactions|只讀所有人 |收支紀錄|
-|categories | 只讀所有人 |類別管理|
-|budgets    | 只讀所有人 |預算設定|
-|saving_goals|只讀所有人 |儲蓄目標|
-|VIEW表     | 只讀所有人 |僅供讀四個VIEW表|
-|資料庫結構修改| 無法   |僅管理者可改 schema|
-|資料備份/匯出 | 可以   |
-
-#### SQL語法
-
-```sql
-CREATE USER 'backup'@'%' IDENTIFIED BY '4321';
-GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
-```
 
 
 
