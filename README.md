@@ -768,33 +768,6 @@ CREATE TABLE invoices (
     CONSTRAINT unique_invoice UNIQUE (user_id, invoice_number, issue_date)
 );
 ```
-
-
-
-
----
-### 主鍵外鍵
-| 資料表(Table)      |     主鍵(Primary Key)    |                  說明                 |
-|-------------|------------|-----------------------------------------------------------|
-| users       | user_id    |                  每個使用者都有唯一的號碼來辨識身分          |
-| categories  | category_id|        每個建立的類別都有唯一的編號                          |
-| transactions    | transaction_id |           每一筆支出紀錄都有唯一的編號               |
-| budgets     | budget_id  |     每一筆月預算表都有唯一的編號                             |
-| saving_goals| goal_id    |   每一個儲蓄目標都有唯一的編號                               |
-| blacklist | blacklist_id    |   每一個黑名單的都有唯一的編號                               |
-| feedback_reports | reports_id    |   每一個回報單的都有唯一的編號                               |
-|  managers |  managers_id    |   每一個管理員的都有唯一的編號                               |
-
-|    子資料表(Child Table)    |     外鍵(Foreign Key)     |  參照主資料表(Parent Table)  |                    說明                     |
-|--------------|------------------|----------------|---------------------------------------------|
-| categories   | user_id          | users          | 每一個類別都是關聯到一位已經註冊的使用者     |
-| transactions     | user_id          | users          | 每一筆交易紀錄都是關聯到一位已經註冊的使用者 |
-| transactions     | category_id      | categories     | 每一筆交易紀錄表會屬於一個已經建立的類別     |
-| budgets      | user_id          | users          | 每個每月預算表會關聯一位已經註冊的使用者     |
-| budgets      | category_id      | categories     | 每個每月預算表會屬於一個已經建立的類別       |
-| saving_goals | user_id          | users          | 每個儲蓄目標表會關聯到一個已經註冊的使用者    |
-| blacklist | user_account          | users          | 每個黑名單都有一個被封鎖的使用者帳號    |
-| blocked_by| managers_id         | managers          | 每個黑名單都有處理該事件的管理員    |
 ---
 
 ### VIEW表設計
@@ -925,39 +898,6 @@ JOIN categories c ON t.category_id = c.category_id
 GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date), c.category_id, c.name
 HAVING category_expense > 0;
 ```
----
----
-### 自訂報表總覽VIEW表SQL
-```sql
-CREATE VIEW custom_report_summary AS
-SELECT 
-    t.user_id,
-    u.name AS user_name,
-    c.category_id,
-    c.name AS category_name,
-    YEAR(t.transaction_date) AS year,
-    MONTH(t.transaction_date) AS month,
-    SUM(CASE WHEN t.type = 'Income' THEN t.amount ELSE 0 END) AS total_income,
-    SUM(CASE WHEN t.type = 'Expense' THEN t.amount ELSE 0 END) AS total_expense
-FROM transactions t
-JOIN users u ON t.user_id = u.user_id
-JOIN categories c ON t.category_id = c.category_id
-GROUP BY t.user_id, u.name, c.category_id, c.name, YEAR(t.transaction_date), MONTH(t.transaction_date);
-```
----
-
-### 月支出VIEW表SQL
-```sql
-CREATE VIEW expense_trend AS
-SELECT t.user_id, u.name AS user_name, YEAR(t.transaction_date) AS year, 
-       MONTH(t.transaction_date) AS month, SUM(t.amount) AS total_expense
-FROM transactions t
-JOIN users u ON t.user_id = u.user_id
-WHERE t.type = 'Expense'
-GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date);
-```
-
-
 ---
 ### 帳單狀態VIEW表SQL
 ```sql
