@@ -895,10 +895,10 @@ SELECT
     YEAR(t.transaction_date)AS year,
     IFNULL(SUM(CASE WHEN t.type='income' THEN t.amount ELSE 0 END),0) AS total_income,
     IFNULL(SUM(CASE WHEN t.type='Expense' THEN t.amount ELSE 0 END),0) AS total_expense,
-    IFNULL(SUM(CASE WHEN t.type='Income' THEN t.amount ELSE 0 END),0) - IFNULL(SUM(CASE WHEN t.type='Expense' THEN t.amount ELSE 0 END),0) AS total_saving,
+    IFNULL(SUM(CASE WHEN t.type='Income' THEN t.amount ELSE 0 END),0) - IFNULL(SUM(CASE WHEN t.type='Expense' THEN t.amount ELSE 0 END),0) AS total_saving
 FROM users u
 LEFT JOIN transactions t ON u.user_id = t.user_id
-GROUP BY u.user_id,u.name,YEAR(t.transactions);
+GROUP BY u.user_id,u.name,YEAR(t.transaction_date);
 ```
 ---
 ### 月總收支報表VIEW表SQL
@@ -961,7 +961,6 @@ GROUP BY t.user_id, u.name, YEAR(t.transaction_date), MONTH(t.transaction_date);
 ---
 ### 帳單狀態VIEW表SQL
 ```sql
-CREATE VIEW bill_status_summary AS
 CREATE VIEW bill_status_summary AS
   SELECT 
       b.user_id,
