@@ -620,9 +620,9 @@ CREATE TABLE debts (
 | notification_id|INTEGER   | PRIMARY KEY                                                           | 通知 ID    |
 | user_id        |INTEGER   | FOREIGN KEY → users(user_id)                                          | 使用者 ID  |
 | type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt',bills))  | 通知類型   |
-| message        | CHAR(255) | NOT NULL                                                             | 通知訊息   |
-| sent_at        | TIMESTAMP |DEFAULT CURRENT_TIMESTAMP                                             | 發送時間   | 
-| status         | TIMESTAMP | DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read'))                 | 通知狀態   |
+| message        | CHAR(255)| NOT NULL                                                             | 通知訊息   |
+| sent_at        | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                             | 發送時間   | 
+| status         | CHAR(10) | DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read'))                 | 通知狀態   |
 
 ### 📋 notifications 完整性限制
 
@@ -640,7 +640,7 @@ CREATE TABLE debts (
 CREATE TABLE notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    type CHAR(20) NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring')),
+    type CHAR(20) NOT NULL CHECK (type IN ('SavingGoal', 'Budget', 'Recurring', 'Debt', 'Bills')),
     message CHAR(255) NOT NULL,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status CHAR(10) DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read')),
@@ -649,15 +649,53 @@ CREATE TABLE notifications (
 ```
 ---
 
+### 📋 accounts 帳戶紀錄表
+
+| 欄位名稱     | 資料型別 | 限制條件                                                                   | 說明      |
+|-------------|----------|---------------------------------------------------------------------------|-----------|
+| account_id  | INTEGER   | PRIMARY KEY                                                              | 帳戶 ID    |
+| user_id     | INTEGER   | FOREIGN KEY → users(user_id)                                             | 使用者 ID  |
+| account_name| CHAR(20)  | NOT NULL CHECK (account_name REGEXP '^[a-zA-Z0-9\u4e00-\u9fa5]+$')       | 帳戶名稱   |
+| account_type| CHAR(20)  | NOT NULL CHECK (account_type IN ('Bank', 'CreditCard', 'Cash', 'Wallet'))| 帳戶類型   |
+| balance     | INTEGER  | NOT NULL CHECK(balance >= 0)                                              | 帳戶餘額   |
+| created_at  | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                                  | 建立時間   | 
+
+### 📋 assets 完整性限制
+
+| 欄位名稱    | 完整性限制                                                             |
+|-------------|----------------------------------------------------------------------|
+| account_id  | 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
+| user_id     | 根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
+| account_name| 由英文、中文、數字組成，不能含有特殊符號|
+| account_type| 只能含有'Bank'、'CreditCard'、'Cash'、'Wallet'這四種英文單字，不能有其他文字或數字和特殊符號|
+| balance     | 可以由數字0~9組成，不能含有文字、特殊符號。|
+| created_at  | 格式YYYY-MM-DD hh-mm-ss，系統會根據當前時間去設定欄位。| 
+
+### 📋  assets 資產紀錄表 SQL
+```sql
+CREATE TABLE accounts (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    account_name CHAR(50) NOT NULL CHECK (account_name REGEXP '^[a-zA-Z0-9\u4e00-\u9fa5]+$'),
+    account_type CHAR(20) NOT NULL CHECK (account_type IN ('Bank', 'CreditCard', 'Cash', 'Wallet')),
+    balance INT NOT NULL CHECK (balance >= 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+```
+
+
+---
+
 ### 📋 assets 資產紀錄表
 
 | 欄位名稱     | 資料型別 | 限制條件                                                                   | 說明      |
 |-------------|----------|---------------------------------------------------------------------------|-----------|
 | asset_id    |INTEGER   | PRIMARY KEY                                                               | 資產 ID    |
 | user_id     |INTEGER   | FOREIGN KEY → users(user_id)                                              | 使用者 ID  |
-| asset_type  |CHAR(20)  | NOT NULL CHECK(asset_type IN ('Bank', 'Investment', 'Property', 'Other')) | 通知類型   |
-| balance     | INTEGER  | NOT NULL CHECK(balance >= 0)                                              | 通知訊息   |
-| created_at  | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                                  | 發送時間   | 
+| asset_type  |CHAR(20)  | NOT NULL CHECK(asset_type IN ('Bank', 'Investment', 'Property', 'Other')) | 資產類型   |
+| balance     | INTEGER  | NOT NULL CHECK(balance >= 0)                                              | 資產金額   |
+| created_at  | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                                  | 建立時間   | 
 
 ### 📋 assets 完整性限制
 
@@ -761,7 +799,7 @@ CREATE TABLE invoices (
     merchant_name CHAR(100),
     merchant_tax_id CHAR(8), 
     transaction_id INT, 
-    status CHAR(7) DEFAULT 'Pending' CHECK(status IN ('Pending','Won', 'Lost')) ,
+    status CHAR(8) DEFAULT 'Pending' CHECK(status IN ('Pending','Won', 'Lost')) ,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id),
