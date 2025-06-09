@@ -764,7 +764,7 @@ CREATE TABLE invoices (
     status CHAR(7) DEFAULT 'Pending' CHECK(status IN ('Pending','Won', 'Lost')) ,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id)
+    FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id),
     CONSTRAINT unique_invoice UNIQUE (user_id, invoice_number, issue_date)
 );
 ```
