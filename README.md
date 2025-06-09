@@ -660,7 +660,7 @@ CREATE TABLE notifications (
 | balance     | INTEGER  | NOT NULL CHECK(balance >= 0)                                              | 帳戶餘額   |
 | created_at  | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                                  | 建立時間   | 
 
-### 📋 assets 完整性限制
+### 📋 accounts 完整性限制
 
 | 欄位名稱    | 完整性限制                                                             |
 |-------------|----------------------------------------------------------------------|
@@ -671,7 +671,7 @@ CREATE TABLE notifications (
 | balance     | 可以由數字0~9組成，不能含有文字、特殊符號。|
 | created_at  | 格式YYYY-MM-DD hh-mm-ss，系統會根據當前時間去設定欄位。| 
 
-### 📋  assets 資產紀錄表 SQL
+### 📋  accounts 帳戶紀錄表 SQL
 ```sql
 CREATE TABLE accounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
