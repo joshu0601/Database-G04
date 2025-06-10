@@ -579,7 +579,7 @@ CREATE TABLE blacklist (
 | remaining_amount | INTEGER |NOT NULL                                               | 剩餘債務         |
 | start_date     | TIMESTAMP | NOT NULL                                               | 債務開始時間     |
 | due_date     | TIMESTAMP | NOT NULL                                                 | 預計還清時間     |
-| status     | CHAR(8) | DEFAULT 'Active',CHECK('Active','Paid off')                  | 債務還款狀況     |
+| status     | CHAR(8) | DEFAULT 'Active',CHECK(status IN ('Active', 'Paid off'))     | 債務還款狀況     |
 | created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                              |債務表建立時間    |
 
 ### 📋 debt 債務表
