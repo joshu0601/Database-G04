@@ -132,7 +132,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 | notifications          | notification_id | 每則通知都有一個唯一的編號|
 | debt                   | debt_id         | 每個債務紀錄都有一個唯一的編號|
 | assets                 | asset_id        | 每個資產紀錄都有一個唯一的編號|
-|                   | bill_id         | 每個帳單都有一個唯一的編號|
+| bills                  | bill_id         | 每個帳單都有一個唯一的編號|
 | invoices               | invoice_id      | 每張發票都有一個唯一的編號|
 ---
 ### 資料表外鍵
@@ -152,13 +152,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 | debt                     | user_id         | users          | 每個債務錶都是關聯到一位已經註冊的使用者    |
 | notifications            |  user_id        | users          | 每則通知都是關聯到一位已經註冊的使用者    |
 |  assets                  | user_id         | users          | 每個資產錶都是關聯到一位已經註冊的使用者    |
-|                     | user_id         | users          | 每個帳單都是關聯到一位已經註冊的使用者    |
+|  bills                   | user_id         | users          | 每個帳單都是關聯到一位已經註冊的使用者    |
 |  invoices                | user_id         | users          | 每張發票都是關聯到一位已經註冊的使用者    |
 |  invoices                | transactions    | transactions_id| 每張發票都可以關聯到一筆已經建立的交易    |
 ---
 ## ER Diagram
 
-![ER 圖](image/NEWER圖.png)
+![ER 圖](image/0610ER圖.png)
 ---
 ## 資料表
 
@@ -276,13 +276,14 @@ INSERT INTO categories (user_id, name) VALUES
 
 | 欄位名稱     | 資料型別 | 限制條件                                  | 說明           |
 |--------------|----------|-------------------------------------------|----------------|
-| transaction_id   | INTEGER   | PRIMARY KEY                   | 交易 ID|
+| transaction_id   | INTEGER   | PRIMARY KEY                          | 交易 ID|
 | user_id      | INTEGER  | FOREIGN KEY → users(user_id)              | 使用者 ID |
 | category_id  | INTEGER  | FOREIGN KEY → categories(category_id)     | 分類 ID     |
+| account_id   | INTEGER  | FOREIGN KEY → accounts(account_id)        | 付款方式 ID     |
 | type         | CHAR(7)  |  NOT NULL CHECK(type='Income'ORtype='Expense')| 收入支出分類    |
 | amount       |INT|               NOT NULL CHECK (amount >= 0)        | 金額       |
 | transaction_date | DATE     | NOT NULL                             | 交易日期       |
-| description   | CHAR(255)|                                      | 此項交易說明  |
+| description   | CHAR(255)|                                         | 此項交易說明  |
 | created_at   | TIMESTAMP|        DEFAULT CURRENT_TIMESTAMP         | 創建時間  |
 
 ### 📋 transactions 完整性限制
@@ -292,6 +293,7 @@ INSERT INTO categories (user_id, name) VALUES
 | transaction_id | 系統會根據每一筆交易建立的順序去給該交易訂單一個編號，該編號是一個整數，從1開始的，每有一筆新訂單就+1|
 | user_id      |由整數組成，不包含特殊符號、文字|
 | category_id  |由整數組成，不包含特殊符號、文字|
+| account_id  |由整數組成，不包含特殊符號、文字|
 | type         |只能是Income或Expense兩種英文單字，不能含有數字、特殊符號、除這兩個英文單字外的英文字母|
 |amount        |金額只能由0到9的數字去組成，不能為負數必須大於等於0，也不能包含文字、特殊符號|
 | transaction_date |格式為 yyyy-mm-dd 。yyyy年是由0到9數字組成，第一位不得為0、mm月如果為個位數月份第一位必須輸入0且是由1到12數字組成、dd日如果為個位數日第一位必須輸入0且是由1到31數字組成，如果當月沒有31號，在存入資料庫前，系統會自動更改為30號。|
@@ -303,6 +305,7 @@ INSERT INTO categories (user_id, name) VALUES
 CREATE TABLE transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
+    account_id INT,
     type CHAR(10) NOT NULL CHECK (type = 'Income' OR type = 'Expense'),
     amount INT NOT NULL CHECK (amount >= 0),
     category_id INT,
@@ -649,7 +652,7 @@ CREATE TABLE notifications (
 ```
 ---
 
-### 📋 accounts 帳戶紀錄表
+### 📋 accounts 付款帳戶紀錄表
 
 | 欄位名稱     | 資料型別 | 限制條件                                                                   | 說明      |
 |-------------|----------|---------------------------------------------------------------------------|-----------|
@@ -671,7 +674,7 @@ CREATE TABLE notifications (
 | balance     | 可以由數字0~9組成，不能含有文字、特殊符號。|
 | created_at  | 格式YYYY-MM-DD hh-mm-ss，系統會根據當前時間去設定欄位。| 
 
-### 📋  accounts 帳戶紀錄表 SQL
+### 📋  accounts 付款帳戶紀錄表 SQL
 ```sql
 CREATE TABLE accounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
