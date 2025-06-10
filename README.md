@@ -132,7 +132,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 | notifications          | notification_id | 每則通知都有一個唯一的編號|
 | debt                   | debt_id         | 每個債務紀錄都有一個唯一的編號|
 | assets                 | asset_id        | 每個資產紀錄都有一個唯一的編號|
-| bills                  | bill_id         | 每個帳單都有一個唯一的編號|
+|                   | bill_id         | 每個帳單都有一個唯一的編號|
 | invoices               | invoice_id      | 每張發票都有一個唯一的編號|
 ---
 ### 資料表外鍵
@@ -152,7 +152,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 | debt                     | user_id         | users          | 每個債務錶都是關聯到一位已經註冊的使用者    |
 | notifications            |  user_id        | users          | 每則通知都是關聯到一位已經註冊的使用者    |
 |  assets                  | user_id         | users          | 每個資產錶都是關聯到一位已經註冊的使用者    |
-|  bills                   | user_id         | users          | 每個帳單都是關聯到一位已經註冊的使用者    |
+|                     | user_id         | users          | 每個帳單都是關聯到一位已經註冊的使用者    |
 |  invoices                | user_id         | users          | 每張發票都是關聯到一位已經註冊的使用者    |
 |  invoices                | transactions    | transactions_id| 每張發票都可以關聯到一筆已經建立的交易    |
 ---
@@ -619,7 +619,7 @@ CREATE TABLE debts (
 |----------------|----------|-----------------------------------------------------------------------|-----------|
 | notification_id|INTEGER   | PRIMARY KEY                                                           | 通知 ID    |
 | user_id        |INTEGER   | FOREIGN KEY → users(user_id)                                          | 使用者 ID  |
-| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt',bills))  | 通知類型   |
+| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt',))  | 通知類型   |
 | message        | CHAR(255)| NOT NULL                                                             | 通知訊息   |
 | sent_at        | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                             | 發送時間   | 
 | status         | CHAR(10) | DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read'))                 | 通知狀態   |
@@ -630,7 +630,7 @@ CREATE TABLE debts (
 |----------------|----------------------------------------------------------------------|
 | notification_id| 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
 | user_id        | 根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
-| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'、bills這五種英文字，不能有其他文字或數字和特殊符號|
+| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'、這五種英文字，不能有其他文字或數字和特殊符號|
 | message        | 由英文、中文、數字組成，不能含有特殊符號|
 | sent_at        | 系統通知使用者的時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss | 
 | status         | 使用者是否已經看過此則通知，只能是'Unread'、'Read'這兩種英文單字，不能含有其他文字或數字和特殊符號|
@@ -640,7 +640,7 @@ CREATE TABLE debts (
 CREATE TABLE notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    type CHAR(20) NOT NULL CHECK (type IN ('SavingGoal', 'Budget', 'Recurring', 'Debt', 'Bills')),
+    type CHAR(20) NOT NULL CHECK (type IN ('SavingGoal', 'Budget', 'Recurring', 'Debt', '')),
     message CHAR(255) NOT NULL,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status CHAR(10) DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read')),
@@ -729,7 +729,7 @@ CREATE TABLE assets (
 | bill_name |CHAR(50)  | NOT NULL CHECK(bill_name REGEXP '^[a-zA-Z\u4e00-\u9fa5]+$')               | 帳單名稱   |
 | amount    | INTEGER  | NOT NULL CHECK(amount >= 0)                                               | 帳單金額   |
 | due_date  | TIMESTAMP|NOT NULL                                                                   | 到期日   | 
-| status    | TIMESTAMP|DEFAULT 'Pending' CHECK(status IN ('Pending', 'Paid', 'Overdue'))          | 付款狀態  | 
+| status    | CHAR(10)|DEFAULT 'Pending' CHECK(status IN ('Pending', 'Paid', 'Overdue'))          | 付款狀態  | 
 | created_at| TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                                  | 建立時間   | 
 
 ### 📋 bills 完整性限制
