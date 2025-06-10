@@ -1,8 +1,15 @@
 var express = require('express');
 const jwt = require('jsonwebtoken');
+const mysql = require('mysql2/promise');
 var router = express.Router();
+const db = mysql.createPool({
+  host: 'database-g04.cj48gosu0lpo.ap-northeast-1.rds.amazonaws.com',
+  user: 'customer',
+  password: '1234',
+  database: 'accounting_system'
+});
 router.post('/verify-token', function(req, res, next) {
-  const token = req.headers['authorization'];
+  const token = req.body['authorization'];
 
   if (!token) {
     return res.status(401).json({
@@ -27,17 +34,22 @@ router.post('/verify-token', function(req, res, next) {
   });
 });
 /* 使用者註冊 */
-router.post('/register', function(req, res, next) {
-  // 從請求中獲取使用者資訊
+router.post('/register', async function(req, res, next) {
   const { name, password, email } = req.body;
 
-  // 這裡應該添加:
-  // 1. 資料驗證
-  // 2. 檢查使用者是否已存在
-  // 3. 密碼加密
-  // 4. 將使用者資訊存入資料庫
+  // 1. 檢查 email 是否已存在
+  const [rows] = await db.query('SELECT * FROM users WHERE user_account = ?', [email]);
+  if (rows.length > 0) {
+    return res.status(400).json({ ok: false, message: 'Email 已註冊' });
+  }
 
-  // 範例回應
+  // 2. 密碼加密（建議用 bcrypt）
+  //const bcrypt = require('bcrypt');
+  //const hash = await bcrypt.hash(password, 10);
+
+  // 3. 新增使用者
+  await db.query('INSERT INTO users (name, user_account) VALUES (?, ?)', [name, email]);
+
   res.status(201).json({
     ok: true,
     message: '註冊成功',
@@ -46,35 +58,49 @@ router.post('/register', function(req, res, next) {
 });
 
 /* 使用者登入 */
-router.post('/login', function(req, res, next) {
-  // 從請求中獲取登入資訊
+router.post('/login', async function(req, res, next) {
   const { email, password } = req.body;
 
-  // 假設有一個用於驗證使用者的函數
-  const isValidUser = (email, password) => {
-    // 在這裡應該檢查使用者是否存在以及密碼是否正確
-    // 這裡僅作為範例返回 true
-    return true;
-  };
+  try {
+    // 查詢資料庫是否有這個帳號
+    const [rows] = await db.query('SELECT * FROM users WHERE user_account = ?', [email]);
+    if (rows.length === 0) {
+      return res.status(401).json({
+        ok: false,
+        message: '使用者不存在',
+      });
+      
+    }
 
-  if (isValidUser(email, password)) {
-    // 使用環境變數生成 JWT token
+    const user = rows[0];
+    // 檢查密碼（這裡假設密碼未加密，若有加密請改用 bcrypt.compare）
+    /*if (user.password !== password) {
+      return res.status(401).json({
+        ok: false,
+        message: '密碼錯誤',
+      });*/
+
+    // 產生 JWT token
     const token = jwt.sign(
-      { email }, 
-      process.env.JWT_SECRET, 
+      { id: user.user_id, name: user.name, email: user.user_account },
+      process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
     res.status(200).json({
       ok: true,
       message: '登入成功',
-      user: "KKK",
       token: token,
+      user: {
+        name: user.name,
+        email: user.user_account
+      }
     });
-  } else {
-    res.status(401).json({
+  } catch (error) {
+    res.status(500).json({
       ok: false,
-      message: '使用者名稱或密碼錯誤',
+      message: '伺服器錯誤',
+      error: error.message,
     });
   }
 });

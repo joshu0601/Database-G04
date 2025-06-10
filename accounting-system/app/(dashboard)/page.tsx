@@ -1,9 +1,8 @@
 "use client"
 
-import { DollarSign, CreditCard, PieChart, ArrowUpDown, Users, Plus, ChevronRight, LogOut, Target } from "lucide-react"
+import { DollarSign, CreditCard, ArrowUpDown, Users, Plus, ChevronRight, LogOut, PieChart, Target } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Overview } from "@/components/overview"
@@ -13,61 +12,62 @@ import { useAuth } from "@/components/auth-provider"
 import { useToast } from "@/hooks/use-toast"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function Dashboard() {
-  const { logout } = useAuth()
+  const { logout, totalAssets, totalIncome, totalExpense } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
 
   // 快速操作功能
-  const handleAddIncome = () => {
-    router.push("/transactions/new?type=income")
-  }
-
-  const handleAddExpense = () => {
-    router.push("/transactions/new?type=expense")
-  }
-
-  // 移除这个函数
-  // const handleAddAccount = () => {
-  //   router.push("/accounts/new")
-  // }
-
+  const handleAddIncome = () => router.push("/transactions/new?type=income")
+  const handleAddExpense = () => router.push("/transactions/new?type=expense")
   const handleGenerateReport = () => {
     router.push("/reports")
-    // 顯示提示訊息
     toast({
       title: "報表生成中",
       description: "您的財務報表正在生成，請稍候...",
     })
   }
 
-  // 分析頁面的數據
-  const analyticsData = {
-    incomeBySource: [
-      { source: "薪資收入", amount: 5000, percentage: 71 },
-      { source: "自由職業", amount: 1500, percentage: 21 },
-      { source: "投資收益", amount: 550, percentage: 8 },
-    ],
-    expensesByDay: [
-      { day: "週一", amount: 120 },
-      { day: "週二", amount: 85 },
-      { day: "週三", amount: 240 },
-      { day: "週四", amount: 95 },
-      { day: "週五", amount: 320 },
-      { day: "週六", amount: 450 },
-      { day: "週日", amount: 280 },
-    ],
-    topMerchants: [
-      { name: "超市", amount: 450, transactions: 5 },
-      { name: "餐廳", amount: 320, transactions: 8 },
-      { name: "加油站", amount: 180, transactions: 2 },
-      { name: "電影院", amount: 120, transactions: 2 },
-      { name: "網購", amount: 350, transactions: 3 },
-    ],
-  }
+  return (
+    <div className="flex min-h-screen w-full flex-col">
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">財務儀表板</h1>
+            <p className="text-muted-foreground">查看您的財務概況和最近交易</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={logout} className="gap-2">
+              <LogOut className="h-4 w-4" />
+              登出
+            </Button>
+            <Link href="/transactions/new">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                新增交易
+              </Button>
+            </Link>
+          </div>
+        </div>
 
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="overview">概覽</TabsTrigger>
+            <TabsTrigger value="analytics">分析</TabsTrigger>
+            <TabsTrigger value="reports">報表</TabsTrigger>
+          </TabsList>
+
+          {/* 概覽 */}
+          <TabsContent value="overview" className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">總資產</CardTitle>
+                  <DollarSign className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
   // 報表頁面的數據
   const reportsData = {
     monthlyComparison: [
@@ -125,8 +125,10 @@ export default function Dashboard() {
                   <DollarSign className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$45,231.89</div>
-                  <p className="text-xs text-muted-foreground">較上月 +20.1%</p>
+                  <div className="text-2xl font-bold">
+                    {totalAssets !== null ? `$${Number(totalAssets).toLocaleString()}` : "載入中..."}
+                  </div>
+                  {/*<p className="text-xs text-muted-foreground">較上月 +20.1%</p>*/}
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950">
@@ -135,7 +137,7 @@ export default function Dashboard() {
                   <CreditCard className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$12,234.00</div>
+                  {totalIncome !== null ? `$${Number(totalIncome).toLocaleString()}` : "載入中..."}
                   <p className="text-xs text-muted-foreground">較上月 +4.3%</p>
                 </CardContent>
               </Card>
@@ -145,7 +147,7 @@ export default function Dashboard() {
                   <ArrowUpDown className="h-4 w-4 text-red-600 dark:text-red-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$8,344.00</div>
+                  {totalExpense !== null ? `$${Number(totalExpense).toLocaleString()}` : "載入中..."}
                   <p className="text-xs text-muted-foreground">較上月 +1.2%</p>
                 </CardContent>
               </Card>

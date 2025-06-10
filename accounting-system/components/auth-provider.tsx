@@ -17,6 +17,10 @@ type AuthContextType = {
   register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
   isLoading: boolean
+  totalAssets: number | null
+  totalIncome: number | null
+  totalExpense: number | null
+  fetchTotalAssets: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -24,18 +28,47 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [totalAssets, setTotalAssets] = useState<number | null>(null)
+  const [totalIncome, setTotalIncome] = useState<number | null>(null)
+  const [totalExpense, setTotalExpense] = useState<number | null>(null)
   const router = useRouter()
   const pathname = usePathname()
 
   // Check for existing session on mount
   useEffect(() => {
-    const checkSession = () => {
+    const checkSession = async () => {
       try {
         const storedUser = localStorage.getItem("user")
+        const storedToken = localStorage.getItem("token")
+        if (!storedToken) {
+          setUser(null)
+          localStorage.removeItem("user")
+          return
+        }
+        // 驗證 token 是否有效
+        const res = await fetch("http://localhost:5000/auth/verify-token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            //"Authorization": `Bearer ${JSON.parse(storedToken)}`
+          },
+          body: JSON.stringify({ authorization: JSON.parse(storedToken) })
+        })
+        const data = await res.json()
+        if (!res.ok || !data.ok) {
+          setUser(null)
+          localStorage.removeItem("user")
+          localStorage.removeItem("token")
+          return
+        }
+        // token 有效，恢復 user 狀態
         if (storedUser) {
           setUser(JSON.parse(storedUser))
         }
       } catch (error) {
+        setUser(null)
+        localStorage.removeItem("user")
+        localStorage.removeItem("token")
         console.error("Error checking session:", error)
       } finally {
         setIsLoading(false)
@@ -61,18 +94,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      // In a real app, you would validate credentials with your backend
-      // This is just a mock implementation
-      const mockUser = {
-        id: "user-1",
-        name: "John Doe",
-        email: email,
-      }
+      const res = await fetch("http://localhost:5000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || "登入失敗")
 
-      setUser(mockUser)
-      localStorage.setItem("user", JSON.stringify(mockUser))
-
-      // Ensure state update before redirect
+      // 假設後端回傳 user 物件
+      setUser(data.user)
+      localStorage.setItem("user", JSON.stringify(data.user))
+      localStorage.setItem("token", JSON.stringify(data.token))
       setTimeout(() => {
         router.push("/")
         setIsLoading(false)
@@ -87,12 +120,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true)
     try {
-      // In a real app, you would create a user in your backend
-      // This is just a mock implementation
-      setTimeout(() => {
-        setIsLoading(false)
-        router.push("/login")
-      }, 1000)
+      const res = await fetch("http://localhost:5000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || "註冊失敗")
+
+      setIsLoading(false)
+      router.push("/login")
     } catch (error) {
       setIsLoading(false)
       console.error("Registration failed:", error)
@@ -106,7 +143,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login")
   }
 
-  return <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>{children}</AuthContext.Provider>
+  // 查詢總資產、收入、支出
+  const fetchTotalAssets = async () => {
+    const token = localStorage.getItem("token")
+    if (!user || !token) return
+    try {
+      const res = await fetch("http://localhost:5000/dashboard/dashbo", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${JSON.parse(token)}`
+        }
+      })
+      const data = await res.json()
+      if (res.ok && data.data) {
+        setTotalAssets(data.data.total_assets)
+        setTotalIncome(data.data.total_income)
+        setTotalExpense(data.data.total_expense)
+        console.log(data.data.total_assets, data.data.total_income, data.data.total_expense)
+      } else {
+        setTotalAssets(null)
+        setTotalIncome(null)
+        setTotalExpense(null)
+      }
+    } catch (error) {
+      setTotalAssets(null)
+      setTotalIncome(null)
+      setTotalExpense(null)
+      console.error("Fetch total assets failed:", error)
+    }
+  }
+
+  // 登入後自動查詢總資產
+  useEffect(() => {
+    if (user) {
+      fetchTotalAssets()
+    } else {
+      setTotalAssets(null)
+    }
+  }, [user])
+
+  return (
+    <AuthContext.Provider value={{
+      user, login, register, logout, isLoading,
+      totalAssets, totalIncome, totalExpense, fetchTotalAssets
+    }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export const useAuth = () => {

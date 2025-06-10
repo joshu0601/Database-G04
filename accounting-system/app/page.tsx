@@ -15,9 +15,9 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 
 export default function Dashboard() {
-  const { logout } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
+  const { logout, totalAssets,totalExpense,totalIncome } = useAuth()
 
   // 快速操作功能
   const handleAddIncome = () => {
@@ -78,8 +78,8 @@ export default function Dashboard() {
                   <DollarSign className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$45,231.89</div>
-                  <p className="text-xs text-muted-foreground">較上月 +20.1%</p>
+                  <div className="text-2xl font-bold">{totalAssets !== null ? `$${Number(totalAssets).toLocaleString()}` : "載入中..."}</div>
+                  {/*<p className="text-xs text-muted-foreground">較上月 +20.1%</p>*/}
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950">
@@ -88,8 +88,8 @@ export default function Dashboard() {
                   <CreditCard className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$12,234.00</div>
-                  <p className="text-xs text-muted-foreground">較上月 +4.3%</p>
+                  <div className="text-2xl font-bold">{totalIncome !== null ? `$${Number(totalIncome).toLocaleString()}` : "載入中..."}</div>
+                  {/*<p className="text-xs text-muted-foreground">較上月 +4.3%</p>*/}
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950 dark:to-rose-950">
@@ -98,8 +98,8 @@ export default function Dashboard() {
                   <ArrowUpDown className="h-4 w-4 text-red-600 dark:text-red-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$8,344.00</div>
-                  <p className="text-xs text-muted-foreground">較上月 +1.2%</p>
+                  <div className="text-2xl font-bold">{totalExpense !== null ? `$${Number(totalExpense).toLocaleString()}` : "載入中..."}</div>
+                  {/* <p className="text-xs text-muted-foreground">較上月 +1.2%</p> */}
                 </CardContent>
               </Card>
             </div>
@@ -108,7 +108,7 @@ export default function Dashboard() {
               <Card className="col-span-4">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
-                    <CardTitle>財務概覽</CardTitle>
+                    <CardTitle>財務概欄</CardTitle>
                     <CardDescription>查看您的收入和支出趨勢</CardDescription>
                   </div>
                   <div>

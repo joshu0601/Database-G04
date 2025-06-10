@@ -36,7 +36,7 @@ export default function RegisterPage() {
         throw new Error("兩次輸入的密碼不一致")
       }
 
-      const name = `${firstName} ${lastName}`
+      const name = `${lastName}${firstName}`
       await register(name, email, password)
 
       toast({
