@@ -575,9 +575,9 @@ CREATE TABLE blacklist (
 
 | 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
 |----------------|----------|---------------------------------------------------------|------------------|
-| debt_id        |INTEGER   | PRIMARY KEY                                            | 回報清單 ID       |
+| debt_id        |INTEGER   | PRIMARY KEY                                            | 債務表 ID       |
 | user_id        |INTEGER   | FOREIGN KEY → users(user_id)                           | 使用者 ID         |
-| debt_name        |CHAR(50)  | NOT NULL                                             | 回報類型         |
+| debt_name        |CHAR(50)  | NOT NULL                                             | 債務名稱         |
 | debt_amount      | INTEGER | NOT NULL                                              | 負債金額         |
 | remaining_amount | INTEGER |NOT NULL                                               | 剩餘債務         |
 | start_date     | TIMESTAMP | NOT NULL                                               | 債務開始時間     |
