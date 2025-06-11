@@ -622,7 +622,7 @@ CREATE TABLE debts (
 |----------------|----------|-----------------------------------------------------------------------|-----------|
 | notification_id|INTEGER   | PRIMARY KEY                                                           | 通知 ID    |
 | user_id        |INTEGER   | FOREIGN KEY → users(user_id)                                          | 使用者 ID  |
-| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt',))  | 通知類型   |
+| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt','bills'))| 通知類型   |
 | message        | CHAR(255)| NOT NULL                                                             | 通知訊息   |
 | sent_at        | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                             | 發送時間   | 
 | status         | CHAR(10) | DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read'))                 | 通知狀態   |
@@ -633,7 +633,7 @@ CREATE TABLE debts (
 |----------------|----------------------------------------------------------------------|
 | notification_id| 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
 | user_id        | 根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
-| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'、這五種英文字，不能有其他文字或數字和特殊符號|
+| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'、'bills'這五種英文字，不能有其他文字或數字和特殊符號|
 | message        | 由英文、中文、數字組成，不能含有特殊符號|
 | sent_at        | 系統通知使用者的時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss | 
 | status         | 使用者是否已經看過此則通知，只能是'Unread'、'Read'這兩種英文單字，不能含有其他文字或數字和特殊符號|
