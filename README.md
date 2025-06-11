@@ -832,6 +832,8 @@ SELECT
     sg.target_amount,
     sg.current_amount,
     sg.status,
+    sg.start_date,
+    sg.end_date,
     CASE 
         WHEN DATEDIFF(sg.end_date, CURDATE()) < 0 THEN 0
         ELSE DATEDIFF(sg.end_date, CURDATE())
