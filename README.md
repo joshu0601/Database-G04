@@ -796,7 +796,7 @@ CREATE TABLE bills (
 CREATE TABLE invoices (
     invoice_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    invoice_number CHAR(10) NOT NULL,
+    invoice_number CHAR(10) NOT NULL CHECK (invoice_number REGEXP '^[A-Z]{2}[0-9]{8}$'),
     amount INT NOT NULL, 
     issue_date DATE NOT NULL, 
     merchant_name CHAR(100),
