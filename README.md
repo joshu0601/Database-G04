@@ -159,6 +159,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 ## ER Diagram
 
 ![ER 圖](image/0610ER圖.png)
+
+## 簡易ER Diagram
+
+![ER 圖](image/image.png)
 ---
 ## 資料表
 
