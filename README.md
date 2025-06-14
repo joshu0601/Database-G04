@@ -641,16 +641,16 @@ INSERT INTO recurring_transactions (
     frequency_day, frequency_month, start_date, end_date,
     description, status
 ) VALUES
-(0, 1, 2, 'Income', 50000, 'Monthly', 10, NULL, '2025-01-01', '2025-12-31', '薪資入帳', 'Active'),
-(1, 1, 3, 'Expense', 15000, 'Monthly', 5, NULL, '2025-01-05', '2025-12-05', '房租扣款', 'Active'),
-(2, 1, 1, 'Income', 12000, 'Weekly', 3, NULL, '2025-06-01', '2025-09-01', '兼職收入', 'Paused'),
-(3, 1, 4, 'Expense', 800, 'Weekly', 7, NULL, '2025-05-01', '2025-08-01', '電費支出', 'Active'),
-(4, 1, 5, 'Expense', 3000, 'Yearly', 25, 6, '2025-06-25', '2028-06-25', '保險扣款', 'Paused'),
-(5, 2, 6, 'Income', 10000, 'Monthly', 20, NULL, '2025-03-20', '2025-12-20', '補助款', 'Completed'),
-(6, 3, 7, 'Expense', 2500, 'Monthly', 15, NULL, '2025-04-15', '2025-09-15', '網路費用', 'Paused'),
-(7, 4, 3, 'Income', 6000, 'Daily', NULL, NULL, '2025-05-01', '2025-05-31', '零工收入', 'Active'),
-(8, 5, 2, 'Expense', 2000, 'Weekly', 1, NULL, '2025-06-01', '2025-12-31', '雜支扣款', 'Active'),
-(9, 6, 8, 'Expense', 9000, 'Yearly', 10, 12, '2025-12-10', '2026-12-10', '年終支出', 'Paused');
+(1, 1, 2, 'Income', 50000, 'Monthly', 10, NULL, '2025-01-01', '2025-12-31', '薪資入帳', 'Active'),
+(2, 1, 3, 'Expense', 15000, 'Monthly', 5, NULL, '2025-01-05', '2025-12-05', '房租扣款', 'Active'),
+(3, 1, 1, 'Income', 12000, 'Weekly', 3, NULL, '2025-06-01', '2025-09-01', '兼職收入', 'Paused'),
+(4, 1, 4, 'Expense', 800, 'Weekly', 7, NULL, '2025-05-01', '2025-08-01', '電費支出', 'Active'),
+(5, 1, 5, 'Expense', 3000, 'Yearly', 25, 6, '2025-06-25', '2028-06-25', '保險扣款', 'Paused'),
+(6, 2, 6, 'Income', 10000, 'Monthly', 20, NULL, '2025-03-20', '2025-12-20', '補助款', 'Completed'),
+(7, 3, 7, 'Expense', 2500, 'Monthly', 15, NULL, '2025-04-15', '2025-09-15', '網路費用', 'Paused'),
+(8, 4, 3, 'Income', 6000, 'Daily', NULL, NULL, '2025-05-01', '2025-05-31', '零工收入', 'Active'),
+(9, 5, 2, 'Expense', 2000, 'Weekly', 1, NULL, '2025-06-01', '2025-12-31', '雜支扣款', 'Active'),
+(10, 6, 8, 'Expense', 9000, 'Yearly', 10, 12, '2025-12-10', '2026-12-10', '年終支出', 'Paused');
 ```
 ![定期交易表](image/resurring_transactions實際建置.png)
 ---
