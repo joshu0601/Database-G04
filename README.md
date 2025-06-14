@@ -370,12 +370,19 @@ CREATE TABLE users (
 ```
 ### 📋 users 使用者資料表SQL範例
 ```sql
-INSERT INTO users (user_account, user_password, name, total_assets) VALUES
-('xiaosong', 'abc123', '小宋', 350000),
-('laogao', 'def456', '老高', 80000),
-('xiaoguo', 'ghi789', '小郭', 28000),
-('zhangsan', 'jkl000', '張三', 60000);
+INSERT INTO users (user_id, user_account, name, total_assets, created_at) VALUES
+(1, 'xiaosong@gmail.com', '小宋', 328000, '2025-04-30 22:53:00'),
+(2, 'laogao@gmail.com', '老高', 80000, '2025-05-19 11:22:53'),
+(3, 'xiaoguo@gmail.com', '小郭', 28000, '2025-05-19 11:22:53'),
+(4, 'zhangsan@gmail.com', '張三', 60000, '2025-05-19 11:22:53'),
+(5, 'songla@example.com', '宋大師', 50000, '2025-06-03 13:14:42'),
+(6, 'bob.lin@example.com', '林博文', 118000, '2025-06-03 13:14:42'),
+(7, 'carol.wang@example.com', '王小美', 78000, '2025-06-03 13:14:42'),
+(8, 'david.huang@example.com', '黃大衛', 30000, '2025-06-03 13:14:42'),
+(9, 'eva.tsai@example.com', '蔡依華', 9500, '2025-06-03 13:14:42'),
+(10, 'frank.lee@example.com', '李承恩', 105000, '2025-05-30 13:06:02');
 ```
+![使用者](image/users實際建置.png)
 ---
 ### 📋 categories 交易分類表
 
