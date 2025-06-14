@@ -7,7 +7,7 @@
 > ## 報告
 > - [PPT期末簡報](https://www.canva.com/design/DAGooXezDFk/JuXnvlgG4OU5B8fCzmdRAA/view?utm_content=DAGooXezDFk&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h7660f80551)
 >
->- [期末報告PDF](https://github.com/joshu0601/Database-G04/raw/main/report/資料庫期末報告.pdf)
+>- [期末報告PDF](report/資料庫期末報告.pdf)
 > ## Web實作
 >- [Web實作影片](https://youtu.be/NOTtFg97ZWU)
 >- [Web實作Repositories](https://github.com/joshu0601/Database_G04_Web.git)
