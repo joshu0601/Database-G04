@@ -159,6 +159,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
 ## ER Diagram
 
 ![ER 圖](image/0610ER圖.png)
+
+## 簡易ER Diagram
+
+![ER 圖](image/image.png)
 ---
 ## 資料表
 
@@ -575,13 +579,13 @@ CREATE TABLE blacklist (
 
 | 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
 |----------------|----------|---------------------------------------------------------|------------------|
-| debt_id        |INTEGER   | PRIMARY KEY                                            | 回報清單 ID       |
+| debt_id        |INTEGER   | PRIMARY KEY                                            | 債務表 ID       |
 | user_id        |INTEGER   | FOREIGN KEY → users(user_id)                           | 使用者 ID         |
-| debt_name        |CHAR(50)  | NOT NULL                                             | 回報類型         |
+| debt_name        |CHAR(50)  | NOT NULL                                             | 債務名稱         |
 | debt_amount      | INTEGER | NOT NULL                                              | 負債金額         |
 | remaining_amount | INTEGER |NOT NULL                                               | 剩餘債務         |
 | start_date     | TIMESTAMP | NOT NULL                                               | 債務開始時間     |
-| due_date     | TIMESTAMP | NOT NULL                                                 | 預計還清時間     |
+| due_date     | TIMESTAMP | NOT NULL                                                 | 債務到期日     |
 | status     | CHAR(8) | DEFAULT 'Active',CHECK(status IN ('Active', 'Paid off'))     | 債務還款狀況     |
 | created_at     | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP                              |債務表建立時間    |
 
@@ -622,7 +626,7 @@ CREATE TABLE debts (
 |----------------|----------|-----------------------------------------------------------------------|-----------|
 | notification_id|INTEGER   | PRIMARY KEY                                                           | 通知 ID    |
 | user_id        |INTEGER   | FOREIGN KEY → users(user_id)                                          | 使用者 ID  |
-| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt',))  | 通知類型   |
+| type           |CHAR(20)  | NOT NULL CHECK(type IN ('SavingGoal', 'Budget', 'Recurring','Debt','bills'))| 通知類型   |
 | message        | CHAR(255)| NOT NULL                                                             | 通知訊息   |
 | sent_at        | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                             | 發送時間   | 
 | status         | CHAR(10) | DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read'))                 | 通知狀態   |
@@ -633,7 +637,7 @@ CREATE TABLE debts (
 |----------------|----------------------------------------------------------------------|
 | notification_id| 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
 | user_id        | 根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
-| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'、這五種英文字，不能有其他文字或數字和特殊符號|
+| type           | 只能是'SavingGoal'、 'Budget'、 'Recurring'、'Debt'、'bills'這五種英文字，不能有其他文字或數字和特殊符號|
 | message        | 由英文、中文、數字組成，不能含有特殊符號|
 | sent_at        | 系統通知使用者的時間，預設為當下時間，格式YYYY-MM-DD hh-mm-ss | 
 | status         | 使用者是否已經看過此則通知，只能是'Unread'、'Read'這兩種英文單字，不能含有其他文字或數字和特殊符號|
@@ -643,7 +647,7 @@ CREATE TABLE debts (
 CREATE TABLE notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    type CHAR(20) NOT NULL CHECK (type IN ('SavingGoal', 'Budget', 'Recurring', 'Debt', '')),
+    type CHAR(20) NOT NULL CHECK (type IN ('SavingGoal', 'Budget', 'Recurring', 'Debt', 'bills')),
     message CHAR(255) NOT NULL,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status CHAR(10) DEFAULT 'Unread' CHECK(status IN ('Unread', 'Read')),
@@ -796,7 +800,7 @@ CREATE TABLE bills (
 CREATE TABLE invoices (
     invoice_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    invoice_number CHAR(10) NOT NULL,
+    invoice_number CHAR(10) NOT NULL CHECK (invoice_number REGEXP '^[A-Z]{2}[0-9]{8}$'),
     amount INT NOT NULL, 
     issue_date DATE NOT NULL, 
     merchant_name CHAR(100),
@@ -837,6 +841,8 @@ SELECT
     sg.target_amount,
     sg.current_amount,
     sg.status,
+    sg.start_date,
+    sg.end_date,
     CASE 
         WHEN DATEDIFF(sg.end_date, CURDATE()) < 0 THEN 0
         ELSE DATEDIFF(sg.end_date, CURDATE())
@@ -982,6 +988,30 @@ CREATE VIEW net_worth_summary AS
   LEFT JOIN assets a ON u.user_id = a.user_id
   LEFT JOIN debts d ON u.user_id = d.user_id
   GROUP BY u.user_id, u.name, u.total_assets;
+```
+
+---
+### 發票種類VIEW表SQL
+```sql
+CREATE VIEW invoice_with_category AS
+SELECT
+    i.invoice_id,
+    i.user_id,
+    i.invoice_number,
+    i.amount,
+    i.issue_date,
+    i.merchant_name,
+    i.merchant_tax_id,
+    i.transaction_id,
+    i.created_at,
+    t.category_id,
+    c.name AS category_name
+FROM
+    invoices i
+LEFT JOIN
+    transactions t ON i.transaction_id = t.transaction_id
+LEFT JOIN
+    categories c ON t.category_id = c.category_id;
 ```
 ---
 ### 發票分類管理VIEW表SQL
