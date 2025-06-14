@@ -679,7 +679,7 @@ CREATE TABLE feedback_reports (
 | 欄位名稱       | 資料型別 | 限制條件                                                  | 說明              |
 |----------------|----------|---------------------------------------------------------|------------------|
 | blacklist_id   | INTEGER  | PRIMARY KEY                                              | 黑名單 ID        |
-| user_account   | CHAR(255)| FOREIGN KEY → users(user_account)                       |  使用者帳號       |
+| user_id   | INTEGER| FOREIGN KEY → users(user_id)                       |  使用者帳號       |
 | blocked_by     | INT      |FOREIGN KEY → managers(manager_id)                        | 哪個管理員封鎖的   |
 | reason         | CHAR(200)| NOT NULL                                                 | 封鎖原因         |
 | blocked_at     | TIMESTAMP| DEFAULT CURRENT_TIMESTAMP	                               | 封鎖時間          |
@@ -690,22 +690,21 @@ CREATE TABLE feedback_reports (
 | 欄位名稱       | 完整性限制                                                             |
 |----------------|----------------------------------------------------------------------|
 | blacklist_id   |由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。 |
-| user_account   |[2]|
+| user_id   |由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
 | reason         | 可以由文字、英文、數字組成，不能含有特殊符號且長度不超過200個字。|
 | blocked_at     | 格式YYYY-MM-DD hh-mm-ss，系統會根據當前時間去設定欄位。 |
 | blocked_by     |由數字組成的管理員ID，根據管理員數量去增加ID編碼。 |
 
-[2]格式為 local-part@domain。local-part 僅能包含英文字母 a–z、A–Z、數字 0–9、特殊符號 !#$%&'*+-/=?^_`{|}~ 和 `.`，但點號不可作為開頭、結尾，亦不可連續出現，系統不接受 `"..."@domain` 的引號格式。<br>domain 為以點分隔的字串，每段最多 63 字元，總長不超過 255 字元，只能包含英數與 `-`（不可作為開頭或結尾），系統亦不接受 (test) 注釋形式。
 
 ### 📋  blacklist 黑名單
 ```sql
 CREATE TABLE blacklist (
     blacklist_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_account CHAR(50),
+    user_id INT,
     reason CHAR(200) NOT NULL,
     blocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     blocked_by INT,
-    FOREIGN KEY (user_account) REFERENCES users(user_account),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (blocked_by) REFERENCES managers(manager_id)
 );
 ```
@@ -791,44 +790,6 @@ CREATE TABLE notifications (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 ```
----
-
-### 📋 accounts 付款帳戶紀錄表
-
-| 欄位名稱     | 資料型別 | 限制條件                                                                   | 說明      |
-|-------------|----------|---------------------------------------------------------------------------|-----------|
-| account_id  | INTEGER   | PRIMARY KEY                                                              | 帳戶 ID    |
-| user_id     | INTEGER   | FOREIGN KEY → users(user_id)                                             | 使用者 ID  |
-| account_name| CHAR(20)  | NOT NULL CHECK (account_name REGEXP '^[a-zA-Z0-9\u4e00-\u9fa5]+$')       | 帳戶名稱   |
-| account_type| CHAR(20)  | NOT NULL CHECK (account_type IN ('Bank', 'CreditCard', 'Cash', 'Wallet'))| 帳戶類型   |
-| balance     | INTEGER  | NOT NULL CHECK(balance >= 0)                                              | 帳戶餘額   |
-| created_at  | TIMESTAMP|DEFAULT CURRENT_TIMESTAMP                                                  | 建立時間   | 
-
-### 📋 accounts 完整性限制
-
-| 欄位名稱    | 完整性限制                                                             |
-|-------------|----------------------------------------------------------------------|
-| account_id  | 由整數1開始計算，新增一筆資料就加1。只由數字組成，不能有文字或英文以及特殊符號。|
-| user_id     | 根據當前使用者的ID組成，只能有數字不能有文字或英文和特殊符號。|
-| account_name| 由英文、中文、數字組成，不能含有特殊符號|
-| account_type| 只能含有'Bank'、'CreditCard'、'Cash'、'Wallet'這四種英文單字，不能有其他文字或數字和特殊符號|
-| balance     | 可以由數字0~9組成，不能含有文字、特殊符號。|
-| created_at  | 格式YYYY-MM-DD hh-mm-ss，系統會根據當前時間去設定欄位。| 
-
-### 📋  accounts 付款帳戶紀錄表 SQL
-```sql
-CREATE TABLE accounts (
-    account_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    account_name CHAR(50) NOT NULL CHECK (account_name REGEXP '^[a-zA-Z0-9\u4e00-\u9fa5]+$'),
-    account_type CHAR(20) NOT NULL CHECK (account_type IN ('Bank', 'CreditCard', 'Cash', 'Wallet')),
-    balance INT NOT NULL CHECK (balance >= 0),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-```
-
-
 ---
 
 ### 📋 assets 資產紀錄表
