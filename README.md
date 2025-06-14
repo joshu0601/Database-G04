@@ -330,7 +330,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'manager'@'%';
 
 ```sql
 CREATE USER 'backup'@'%' IDENTIFIED BY '4321';
-GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'backup'@'%';
+GRANT SELECT, LOCK TABLES, SHOW VIEW ON accounting_system.* TO 'backup'@'%';
 ```
 ---
 
