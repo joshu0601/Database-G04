@@ -8,7 +8,7 @@
 > - [PPT期末簡報](https://www.canva.com/design/DAGooXezDFk/JuXnvlgG4OU5B8fCzmdRAA/view?utm_content=DAGooXezDFk&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h7660f80551)
 >
 >- [Word期末報告](https://github.com/joshu0601/Database-G04/raw/main/report/資料庫期末報告.docx)
-
+>- [web實作影片](https://youtu.be/NOTtFg97ZWU)
 
 ## 🏆 團隊成員
 | 成員 | 學號 | 班級 | 專題負責部分 |
@@ -214,7 +214,7 @@ b.	使用者可以選擇自己有的付款方式來新增。<br>
 | 支出統計與趨勢分析 | 張三，30 歲公司會計師    | 系統自動生成圖表顯示支出比例，幫助他跟老闆報告目前公司的收支情形。                               |
 ---
 ## 使用者案例圖
-![使用者](image/最終版使用者案例圖.png)
+![使用者](image/真的最終版使用者案例圖.png)
 ### a.	註冊登入系統：註冊成功將會新增一筆在users資料表的資料。登入時會透過users_account在users裡搜尋是否有該使用者的user_id，如果有就調用password DB來查找對應的密碼。<br>
 ### b.	查詢帳戶、各種紀錄：系統會透過查詢users找到帳戶資訊並用user_id從不同資料表中找到下列對應的資料，categories找到分類有哪些、transactions找到總共的交易總數、budgets找到預算表、saving_goals找到儲蓄目標表。<br>
 ### c.	新增分類：使用者新增飲食分類，系統會按照當前的user_id與分類名稱在categories新增一個可供用戶選擇的名稱。<br>
