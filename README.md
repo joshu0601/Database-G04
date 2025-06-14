@@ -815,14 +815,19 @@ CREATE TABLE invoices (
 #### a.一般使用者
 | 名稱              | 選擇的屬性                                                                                                                                | 說明                                                                                         |
 | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
-| 有創建儲蓄目標所有人儲蓄目標進度       | • `saving_goals(goal_id, name, target_amount, current_amount, start_date, end_date, created_at, status)`<br>• `users(name)`          | 可以查看資料庫內有創建儲蓄目標所有人的名字、開始結束儲蓄時間、目標金額、目前已存的金額以及狀態，之後可以再利用這個表來找出特定人有關於儲蓄目標的資料且能算出離目標還差多少金額、多少時間...等。 |
-| 所有人交易紀錄         | • `transactions(transaction_id, type, amount, transaction_date, description, created_at)`<br>• `categories(name)`<br>• `users(name)` | 可以查看資料庫內所有人的名字、每筆交易紀錄（含交易日期、金額、類別），之後也能透過此表查詢出想要的人的所有交易紀錄。                                 |
-| 所有人個人資料         | • `users(user_id, user_account, name, total_assets, created_at)`<br>• `transactions(type, amount)`                                   | 可以查看資料庫內所有人的個人資料（含名字、總資產、創建時間、帳號），以及他交易的總支出含總花費，之後也能透過此表查詢出想要的人的個人資料。                      |
-| 所有人所有分類的總收入與總支出 | • `users(user_id, name)`<br>• `categories(category_id, name)`<br>• `transactions(type, amount)`                                      | 可以查看資料庫內所有人每種分類的總收入以及總支出，所以會從資料庫拿每種分類下的收入以及支出做運算，以便之後實現能讓使用者查看個人帳戶下的所有分類的總收支。              |
-| 所有人每月預算查詢VIEW表 | • `users(user_id, name)`<br>• `categories(category_id)`<br>• `budget(year,month,budget_limit,spent_amount)`                                      | 可以查看資料庫內所有人每種分類下的每月預算表，所以會從資料庫拿每種分類的每月預算表作處理，讓使用者可以在首頁查看自己的每月預算表中每個類別當前的花費              |
-| 所有人年度總結查詢 | • `users(user_id, name)`<br>• `categories(category_id)`<br>• `budget(year,month,budget_limit,spent_amount)`                                      | 可以查看資料庫內所有人每種分類下的每月預算表，所以會從資料庫拿每種分類的每月預算表作處理，讓使用者可以在首頁查看自己的每月預算表中每個類別當前的花費              |
+| 儲蓄目標進度       | •`saving_goals(goal_id, name, target_amount, current_amount, start_date, end_date, created_at, status)`<br>• `users(name)`          | 可以查看資料庫內有創建儲蓄目標所有人的名字、開始結束儲蓄時間、目標金額、目前已存的金額以及狀態，之後可以再利用這個表來找出特定人有關於儲蓄目標的資料且能算出離目標還差多少金額、多少時間...等。 |
+| 交易紀錄         | •`transactions(transaction_id, type, amount, transaction_date, description, created_at)`<br>• `categories(name)`<br>• `users(name)` | 可以查看資料庫內所有人的名字、每筆交易紀錄（含交易日期、金額、類別），之後也能透過此表查詢出想要的人的所有交易紀錄。                                 |
+| 個人資料         | •`users(user_id, user_account, name, total_assets, created_at)`<br>• `transactions(type, amount)`                                   | 可以查看資料庫內所有人的個人資料（含名字、總資產、創建時間、帳號），以及他交易的總支出含總花費，之後也能透過此表查詢出想要的人的個人資料。                      |
+| 所有分類的總收入與總支出 | •`users(user_id, name)`<br>• `categories(category_id, name)`<br>• `transactions(type, amount)`                                      | 可以查看資料庫內所有人每種分類的總收入以及總支出，所以會從資料庫拿每種分類下的收入以及支出做運算，以便之後實現能讓使用者查看個人帳戶下的所有分類的總收支。              |
+| 每月預算 | • `users(user_id, name)`<br>•`categories(category_id)`<br>• `budget(year,month,budget_limit,spent_amount)`                                      | 可以查看資料庫內有創建每月預算表內每人每月在每分類所設定的預算，裡面會從category、budgets、users三個資料表內拿資料做整合運算，以便之後查詢特定人旗下的所有分類之預算。              |
+| 年度總結 | • `users(user_id, name)`<br>•`categories(category_id)`<br>• `budget(year,month,budget_limit,spent_amount)`                                      | 可以查看在這資料庫內所有人的在同一年內的所有收支情況，所以這個VIEW表裡面會從users、transactions兩個表拿資料做整合運算，以便之後要查詢特定人在特定一年內的總收支情況。              |
+| 月總收支報表 | • `users(user_id, name)`<br>•`categories(category_id,name,)`<br>•`transactions(user_id,transaction_date,type,amount)`                                      | 可以查看所有人在每年每個月每個分類的總收入及總支出及這個分類的花費占總花費的百分比，所以會從users、transaction、categories三個資料表中拿資料做整合運算，以便之後查詢特定使用者在每個分類的收支情況。              |
+| 帳單狀態 | •`users(user_id, name)`<br>•`bills(user_id,bill_id,bill_name,amount,due_date,status)`| 可以查看資料庫內所有人的帳單狀態、逾期的時間、金額等，所以會從bills、users這兩個表內拿資料整合運算，以便之後可以直接查詢特定使用者旗下的所有帳單。              |
+| 資產與債務狀態 | •`users(user_id, name,total_assets)`<br>•`assets(user_id,balance)`<br>•`debts(user_id,remaining_amount)`| 可以查看所有人旗下的總資產(users表)、資產總金額(assets表)、債務總金額及資產與債務相差多少錢，所以會從users、assets、debts三個表中拿資料出來整合運算，以便之後查詢特定使用者的資產與債務狀態。              |
+| 發票分類管理 | •`invoices(invoice_id,user_id,invoice_number,amount,issue_date,merchant_name,merchant_tax_id,transaction_id,created_at,)`<br>•`transactions(category_id)`<br>•`categories(name)`| 可以查看所有人在每個分類裡面有哪些發票，所以會從invoices、transactions、categories三個資料表拿資料出來整合運算，以便之後特定使用者想要查詢自己旗下每個分類下的發票。              |
 
-### 所有人儲蓄目標進度VIEW表SQL
+
+### 儲蓄目標進度VIEW表SQL
 ```sql
 CREATE VIEW saving_goal_status AS
 SELECT 
@@ -839,7 +844,7 @@ SELECT
 FROM saving_goals sg
 JOIN users u ON sg.user_id = u.user_id;
 ```
-### 所有人交易紀錄VIEW表SQL
+### 交易紀錄VIEW表SQL
 ```sql
 CREATE VIEW user_transaction_history AS
 SELECT 
@@ -854,7 +859,7 @@ FROM transactions t
 JOIN users u ON t.user_id = u.user_id
 JOIN categories c ON t.category_id = c.category_id;
 ```
-### 所有人個人資料VIEW表SQL
+### 個人資料VIEW表SQL
 ```sql
 CREATE VIEW user_financial_summary AS
 SELECT 
@@ -868,7 +873,7 @@ FROM users u
 LEFT JOIN transactions t ON u.user_id = t.user_id
 GROUP BY u.user_id, u.name, u.user_account, u.total_assets;
 ```
-### 所有人所有分類的總收入與總支出VIEW表SQL
+### 所有分類的總收入與總支出VIEW表SQL
 ```sql
 CREATE VIEW user_category_summary AS
 SELECT
@@ -883,7 +888,7 @@ JOIN categories c ON u.user_id = c.user_id
 LEFT JOIN transactions t ON t.user_id = u.user_id AND t.category_id = c.category_id
 GROUP BY u.user_id, u.name, c.category_id, c.name;
 ```
-### 所有人每月預算查詢VIEW表SQL
+### 每月預算查詢VIEW表SQL
 ```sql
 CREATE VIEW monthly_budget_summary AS
 SELECT 
@@ -900,7 +905,7 @@ FROM users u
 JOIN categories c ON u.user_id = c.user_id
 JOIN budgets b ON b.user_id = u.user_id AND b.category_id = c.category_id;
 ```
-### 所有人年度總結VIEW表SQL
+### 年度總結VIEW表SQL
 ```sql
 CREATE VIEW annual_financial_summary AS
 SELECT 
@@ -979,6 +984,28 @@ CREATE VIEW net_worth_summary AS
   GROUP BY u.user_id, u.name, u.total_assets;
 ```
 ---
+### 發票分類管理VIEW表SQL
+```sql
+CREATE VIEW invoice_with_category AS
+SELECT
+    i.invoice_id,
+    i.user_id,
+    i.invoice_number,
+    i.amount,
+    i.issue_date,
+    i.merchant_name,
+    i.merchant_tax_id,
+    i.transaction_id,
+    i.created_at,
+    t.category_id,
+    c.name AS category_name
+FROM
+    invoices i
+LEFT JOIN
+    transactions t ON i.transaction_id = t.transaction_id
+LEFT JOIN
+    categories c ON t.category_id = c.category_id;
+```
 
 #### b.管理員
 | 名稱              | 選擇的屬性                                                                                                                                | 說明                                                                                         |
