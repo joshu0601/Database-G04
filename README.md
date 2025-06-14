@@ -984,6 +984,30 @@ CREATE VIEW net_worth_summary AS
   LEFT JOIN debts d ON u.user_id = d.user_id
   GROUP BY u.user_id, u.name, u.total_assets;
 ```
+
+---
+### 發票種類VIEW表SQL
+```sql
+CREATE VIEW invoice_with_category AS
+SELECT
+    i.invoice_id,
+    i.user_id,
+    i.invoice_number,
+    i.amount,
+    i.issue_date,
+    i.merchant_name,
+    i.merchant_tax_id,
+    i.transaction_id,
+    i.created_at,
+    t.category_id,
+    c.name AS category_name
+FROM
+    invoices i
+LEFT JOIN
+    transactions t ON i.transaction_id = t.transaction_id
+LEFT JOIN
+    categories c ON t.category_id = c.category_id;
+```
 ---
 
 #### b.管理員
