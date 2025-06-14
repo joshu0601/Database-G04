@@ -275,7 +275,7 @@ b.	使用者可以選擇自己有的付款方式來新增。<br>
 CREATE USER 'customer'@'%' IDENTIFIED BY '1234';
 GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'customer'@'%';
 ```
-![一般使用者權限](image/customer權限jpg)
+![一般使用者權限](image/customer權限.jpg)
 
 #### 2. 管理者
 | 資料表 | 權限 | 說明 |
@@ -304,7 +304,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON accounting_system.* TO 'customer'@'%';
 CREATE USER 'manager'@'%' IDENTIFIED BY '5678';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, CREATE VIEW ON accounting_system.* TO 'manager'@'%';
 ```
-![管理員權限](image/manager權限jpg)
+![管理員權限](image/manager權限.jpg)
 
 
 #### 3. 備份人員
@@ -334,7 +334,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, CREATE VIEW ON accoun
 CREATE USER 'backup'@'%' IDENTIFIED BY '4321';
 GRANT SELECT, LOCK TABLES, SHOW VIEW ON accounting_system.* TO 'backup'@'%';
 ```
-![備份人員權限](image/backup權限jpg)
+![備份人員權限](image/backup權限.jpg)
 ---
 
 ## 資料表
