@@ -768,6 +768,7 @@ INSERT INTO saving_goals (goal_id, user_id, name, target_amount, current_amount,
 (13, 5, '汽車頭期款', 300000, 200000, '2025-01-01', '2025-12-01', 'Active');
 ```
 ![儲蓄目標表](image/saving_goals實際建置.png)
+
 ---
 ### 📋 feedback_reports 使用者問題回報與建議表
 
