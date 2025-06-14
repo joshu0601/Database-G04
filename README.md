@@ -806,6 +806,7 @@ CREATE TABLE feedback_reports (
 ### 📋 feedback_reports 使用者問題回報與建議 SQL範例
 ```sql
 INSERT INTO feedback_reports (report_id, user_id, report_type, title, content, created_at) VALUES
+(1, 1, 'Bug', '交易總覽資料錯誤', '每次資料異常都顯示相同錯誤訊息【資料錯誤】', '2025-06-03 12:22:08'),
 (2, 1, 'Bug', '交易紀錄無對應資料', '在交易紀錄點擊時間無對應資料頁面跳轉(空資料表)', '2025-06-03 12:22:08'),
 (3, 1, 'Bug', '新增預算資料異常', '新增預算時無法選擇分類，會自動跳回首頁', '2025-06-03 12:22:08'),
 (4, 1, 'Suggestion', '希望提供支出類分析視覺', '希望能提供月花費比例圖表，讓我了解每月花費', '2025-06-03 12:22:08'),
